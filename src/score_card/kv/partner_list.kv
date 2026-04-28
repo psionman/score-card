@@ -1,0 +1,20 @@
+<PartnerListScreen>:
+    MDBoxLayout:
+        orientation: "vertical"
+
+        MDTopAppBar:
+            title: "Partners"
+            left_action_items: [["arrow-left", lambda x: app.nav.home()]]
+            right_action_items: [["export", lambda x: root.export_csv()]]
+
+        MDBoxLayout:
+            orientation: "vertical"
+
+            ScrollView:
+                MDList:
+                    id: partner_list
+
+            MDFloatingActionButton:
+                icon: "plus"
+                pos_hint: {"right": 0.95, "y": 0.05}
+                on_release: root.add_partner()

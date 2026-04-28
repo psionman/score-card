@@ -1,0 +1,32 @@
+<PartnerFormScreen>:
+    MDBoxLayout:
+        orientation: "vertical"
+
+        MDTopAppBar:
+            title: "Partner details"
+            left_action_items: [["arrow-left", lambda x: app.nav.home()]]
+            right_action_items: [["content-save", lambda x: root.save()]]
+
+        MDBoxLayout:
+            orientation: "vertical"
+            padding: dp(40)
+            spacing: dp(16)
+            md_bg_color: BG
+
+
+            MDBoxLayout:
+                orientation: "vertical"
+                padding: dp(40)
+                spacing: dp(16)
+                size_hint_y: None
+                height: self.minimum_height
+
+                WhiteTextField:
+                    id: name_input
+                    hint_text: "Partner's Name"
+
+                WhiteTextField:
+                    id: ebu_input
+                    hint_text: "EBU Number"
+                    input_filter: "int"
+            Widget:  # 👈 THIS pushes everything above to the top

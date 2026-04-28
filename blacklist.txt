@@ -1,0 +1,10 @@
+tests
+test
+unittest
+email
+http
+xml
+pydoc
+tkinter
+distutils
+lib2to3

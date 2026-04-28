@@ -1,0 +1,29 @@
+<BoardList>:
+    MDBoxLayout:
+        orientation: "vertical"
+        spacing: 0
+        padding: 0
+
+        MDTopAppBar:
+            title: f"{root.event.date} - {root.event.name}" if root.event else "Boards"
+            left_action_items: [["arrow-left", lambda x: app.nav.event_form()]]
+            right_action_items: [["export", lambda x: root.export_csv()]]
+
+        #MDLabel:
+            #text: "No boards yet" if not root.boards else ""
+            #halign: "center"
+            #opacity: 1 if root.boards else 0
+            #size_hint_y: None
+            #height: dp(48)
+
+        ScrollView:
+            do_scroll_x: False
+            MDList:
+                id: board_list
+                size_hint_y: None
+                height: self.minimum_height
+
+        MDFloatingActionButton:
+            icon: "plus"
+            pos_hint: {"right": 0.95, "y": 0.05}
+            on_release: root.go_add_board()

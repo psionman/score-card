@@ -1,0 +1,62 @@
+<EventForm>:
+    MDBoxLayout:
+        orientation: "vertical"
+
+        MDTopAppBar:
+            title: "Event details"
+            left_action_items: [["arrow-left", lambda x: app.nav.home()]]
+            right_action_items: [["content-save", lambda x: root.save_event()]]
+
+        MDBoxLayout:
+            orientation: "vertical"
+            padding: dp(40)
+            spacing: dp(16)
+            md_bg_color: BG
+
+            WhiteTextField:
+                id: name_input
+                hint_text: "Event Name"
+
+            WhiteTextField:
+                id: date_input
+                hint_text: "Date (YYYY-MM-DD)"
+                readonly: True
+                focus: False
+                cursor_width: 0
+                multiline: False
+                size_hint_y: None
+                height: dp(56)
+                icon_right: "calendar-month"
+                icon_right_color: 0.4, 0.4, 0.4, 1
+                on_touch_down: root.handle_date_touch(self, args[1])
+
+            WhiteTextField:
+                id: partner_input
+                hint_text: "Select Partner"
+                focus: False
+                readonly: True
+                icon_right: "menu-down"
+                #on_touch_up: self.collide_point(*args[1].pos) and root.open_partner_menu(self)
+                #on_touch_down: (root.open_modal("partner_input", self), True) if self.collide_point(*args[1].pos) else False
+
+                on_focus: self.focus = False  # nuclear option: immediately kill focus
+                on_touch_down: root.handle_partner_touch(self, args[1])
+
+            WhiteTextField:
+                id: notes_input
+                hint_text: "Notes"
+                multiline: True
+                size_hint_y: None
+                height: dp(140)
+                max_lines: 8
+                font_size: dp(16)
+
+            Widget:
+                size_hint_y: 1
+
+            MDRaisedButton:
+                text: "Boards"
+                pos_hint: {"center_x": 0.5}
+                opacity: 1 if root.event else 0
+                disabled: False if root.event else True
+                on_release: root.go_boards()

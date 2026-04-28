@@ -1,0 +1,22 @@
+<NotImplementedForm>:
+    MDBoxLayout:
+        orientation: "vertical"
+        padding: dp(40)
+        spacing: dp(16)
+        md_bg_color: 1, 0, 0, 1
+
+        MDLabel:
+            text: "Not yet implemented!"
+            halign: "center"
+            theme_text_color: "Custom"
+            size_hint_y: None
+            height: dp(30)
+            text_color: 1, 1, 1, 1
+
+        MDRaisedButton:
+            text: "Back"
+            text_color: 1, 1, 1, 1
+            pos_hint: {"center_x": 0.5}
+            on_release:
+                root.manager.transition.direction = "right"
+                root.manager.current = "splash"

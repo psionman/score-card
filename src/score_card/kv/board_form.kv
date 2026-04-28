@@ -1,0 +1,102 @@
+# kv/board_form.kv
+<BoardForm>:
+    MDBoxLayout:
+        orientation: "vertical"
+
+        MDTopAppBar:
+            title: f"{root.event.date} - {root.event.name}" if root.event else "Boards"
+            left_action_items: [["arrow-left", lambda x: app.nav.boards()]]
+            right_action_items: [["content-save", lambda x: root.save_board()]]
+
+        ScrollView:
+            MDBoxLayout:
+                orientation: "vertical"
+                padding: dp(20)
+                spacing: dp(12)
+                size_hint_y: None
+                height: self.minimum_height
+
+                WhiteTextField:
+                    id: board_number
+                    hint_text: "Board Number"
+                    input_filter: "int"
+                    on_text: root.on_board_number_changed(self.text)
+
+                WhiteTextField:
+                    id: vulnerable
+                    hint_text: "Vulnerable (None, NS, EW, Both)"
+                    readonly: True
+                    on_touch_down: (root.open_modal("vulnerable", self), True) if self.collide_point(*args[1].pos) else False
+
+                WhiteTextField:
+                    id: orientation
+                    hint_text: "Seated as (NS, EW)"
+                    readonly: True
+                    on_touch_down: (root.open_modal("orientation", self), True) if self.collide_point(*args[1].pos) else False
+
+
+
+                WhiteTextField:
+                    id: opponents
+                    hint_text: "Opponents (pair number)"
+                    input_filter: "int"
+
+                WhiteTextField:
+                    id: contract
+                    hint_text: "Contract"
+                    readonly: True
+                    on_touch_down: (root.open_modal("contract", self), True) if self.collide_point(*args[1].pos) else False
+
+
+                WhiteTextField:
+                    id: declarer
+                    hint_text: "Declarer (N/S/E/W)"
+                    readonly: True
+                    on_touch_down: (root.open_modal("declarer", self), True) if self.collide_point(*args[1].pos) else False
+
+
+                WhiteTextField:
+                    id: lead
+                    hint_text: "Lead"
+                    readonly: True
+                    on_touch_down: (root.open_modal("lead", self), True) if self.collide_point(*args[1].pos) else False
+
+
+                WhiteTextField:
+                    id: tricks
+                    hint_text: "Tricks"
+                    input_filter: "int"
+
+                WhiteTextField:
+                    id: score
+                    hint_text: "Score"
+                    readonly: True
+                    input_filter: "int"
+                    readonly: True
+                    disabled: True
+
+                WhiteTextField:
+                    id: section
+                    hint_text: "Section"
+
+                WhiteTextField:
+                    id: team_score
+                    hint_text: "Team Score"
+                    input_filter: "int"
+
+                WhiteTextField:
+                    id: imps
+                    hint_text: "IMPs"
+                    input_filter: "int"
+                    readonly: True
+                    disabled: True
+
+
+                WhiteTextField:
+                    id: notes_input
+                    hint_text: "Notes"
+                    multiline: True
+                    size_hint_y: None
+                    height: dp(140)
+                    max_lines: 8
+                    font_size: dp(16)
