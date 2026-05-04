@@ -1,6 +1,9 @@
 # services/export.py
 import csv
 import os
+import logging
+import traceback
+
 from pathlib import Path
 from models.event import Event
 from kivy.utils import platform
@@ -12,6 +15,7 @@ def export_event_csv(event: Event) -> str:
     safe_name = event.name.replace(" ", "_").replace("/", "-")
     filename = f"{event.date}_{safe_name}.csv"
     filepath = downloads / filename
+    filepath.parent.mkdir(parents=True, exist_ok=True)
 
     fieldnames = [
         "Board",
@@ -32,24 +36,62 @@ def export_event_csv(event: Event) -> str:
         writer = csv.DictWriter(f, fieldnames=fieldnames)
         writer.writeheader()
 
-        for board in (event.boards or []):
-            writer.writerow({
-                "Board":       board.board_number,
-                "Contract":    board.contract,
-                "Declarer":    board.declarer,
-                "Lead":        board.lead,
-                "Tricks":      board.tricks,
-                "Score":       board.score,
-                "Vulnerable":  board.vulnerable,
-                "Orientation": board.orientation,
-                "Opponents":   board.opponents,
-                "Section":     board.section,
-                "Team Score":  board.team_score,
-                "IMPs":        board.imps,
-                "Notes":       board.notes or "",
-            })
-
+        for board in event.boards or []:
+            writer.writerow(
+                {
+                    "Board": board.board_number,
+                    "Contract": board.contract,
+                    "Declarer": board.declarer,
+                    "Lead": board.lead,
+                    "Tricks": board.tricks,
+                    "Score": board.score,
+                    "Vulnerable": board.vulnerable,
+                    "Orientation": board.orientation,
+                    "Opponents": board.opponents,
+                    "Section": board.section,
+                    "Team Score": board.team_score,
+                    "IMPs": board.imps,
+                    "Notes": board.notes or "",
+                }
+            )
+    share_file_email(filepath)
     return filepath
+
+
+def get_export_dir():
+    # This is accessible via plain adb pull without run-as
+    export_dir = Path("/sdcard/Download/scorecard")
+    export_dir.mkdir(parents=True, exist_ok=True)
+    return export_dir
+
+
+def share_file_email(filepath: str) -> None:
+    try:
+        from jnius import autoclass, cast
+
+        PythonActivity = autoclass("org.kivy.android.PythonActivity")
+        Intent = autoclass("android.content.Intent")
+        CharSequence = autoclass("java.lang.CharSequence")
+        String = autoclass("java.lang.String")
+
+        intent = Intent(Intent.ACTION_SEND)
+        intent.setType("text/plain")
+        intent.putExtra(Intent.EXTRA_SUBJECT, String("Score Card Export"))
+
+        with open(filepath, "r") as f:
+            content = f.read()
+        intent.putExtra(Intent.EXTRA_TEXT, String(content))
+        intent.putExtra(Intent.EXTRA_EMAIL, ["jeffwatkins2000@gmail.com"])
+
+        activity = PythonActivity.mActivity
+        title = cast("java.lang.CharSequence", String("Share"))
+        chooser = Intent.createChooser(intent, title)
+        activity.startActivity(chooser)
+    except ImportError:
+        print(f">>> would share: {filepath}")
+    except Exception as e:
+        logging.error(f">>> share failed: {e}")
+        logging.error(traceback.format_exc())
 
 
 def export_partners_csv(partners: list) -> str:
@@ -66,19 +108,22 @@ def export_partners_csv(partners: list) -> str:
         writer = csv.DictWriter(f, fieldnames=fieldnames)
         writer.writeheader()
 
-        for partner in (partners or []):
-            writer.writerow({
-                "Name":       partner.name,
-                "EBU Number":    partner.ebu_number,
-            })
+        for partner in partners or []:
+            writer.writerow(
+                {
+                    "Name": partner.name,
+                    "EBU Number": partner.ebu_number,
+                }
+            )
 
-    return filepath
+    return str(filepath)
 
 
 def _get_download_dir() -> Path:
     # On Android write to app storage, on desktop write to ~/Downloads
     if platform == "android":
         from android.storage import app_storage_path
+
         downloads = Path(app_storage_path()) / "Download"
     else:
         downloads = Path.home() / "Downloads"

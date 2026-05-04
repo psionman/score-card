@@ -27,6 +27,8 @@ from screens.partner_list import PartnerListScreen
 from screens.event_form import EventForm
 from screens.event_list import EventList
 
+from screens.settings_form import SettingsFormScreen
+
 from screens.board_form import BoardForm
 from screens.board_list import BoardList
 from screens.contract_picker import ContractPicker
@@ -35,9 +37,9 @@ from screens.not_implemented import NotImplementedForm
 
 
 LabelBase.register(
-    "DejaVuSans",
-    fn_regular=str(Path(BASE_DIR, "fonts", "DejaVuSans.ttf"))
+    "DejaVuSans", fn_regular=str(Path(BASE_DIR, "fonts", "DejaVuSans.ttf"))
 )
+
 
 class ScoreCard(MDApp):
     title = "Score card"
@@ -64,7 +66,7 @@ class ScoreCard(MDApp):
 
         self.nav = NavigationService(self.sm)
 
-        self.sm .add_widget(Splash(name="splash"))
+        self.sm.add_widget(Splash(name="splash"))
 
         self.sm.add_widget(PartnerFormScreen(name="partner_form"))
         self.sm.add_widget(PartnerListScreen(name="partner_list"))
@@ -74,6 +76,8 @@ class ScoreCard(MDApp):
 
         self.sm.add_widget(BoardForm(name="board_form"))
         self.sm.add_widget(BoardList(name="board_list"))
+
+        self.sm.add_widget(SettingsFormScreen(name="settings_form"))
 
         self.sm.add_widget(NotImplementedForm(name="not_implemented_form"))
 

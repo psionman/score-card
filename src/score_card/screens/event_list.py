@@ -1,17 +1,15 @@
+# screens/event-list.py
 from pathlib import Path
-from kivymd.uix.list import OneLineListItem
-from kivymd.uix.screen import MDScreen
-from kivy.clock import Clock
-from kivymd.uix.menu import MDDropdownMenu
-from kivy.lang import Builder
-from kivy.app import App
-from kivy.metrics import dp
-
-
-from services.event import EventService
-from services.partner import PartnerService
 
 from constants import KV_DIR
+from kivy.app import App
+from kivy.lang import Builder
+from kivy.metrics import dp
+from kivymd.uix.list import OneLineListItem
+from kivymd.uix.menu import MDDropdownMenu
+from kivymd.uix.screen import MDScreen
+from services.event import EventService
+from services.partner import PartnerService
 
 Builder.load_file(str(Path(KV_DIR, "theme.kv")))
 Builder.load_file(str(Path(KV_DIR, "event_list.kv")))
@@ -47,12 +45,15 @@ class EventList(MDScreen):
         self.manager.transition.direction = "left"
         self.manager.current = "event_form"
 
-
-
     def go_event_form(self):
         form = self.manager.get_screen("event_form")
         form.set_event(None)
         App.get_running_app().nav.event_form()
+
+    def go_settings_form(self):
+        form = self.manager.get_screen("settings_form")
+        # form.set_event(None)
+        App.get_running_app().nav.settings_form()
 
     def go_partners(self):
         App.get_running_app().nav.partner_list()
@@ -67,11 +68,16 @@ class EventList(MDScreen):
                 "viewclass": "OneLineListItem",
                 "on_release": lambda x="Partners": self.select_menu("partners"),
             },
-            # {
-            #     "viewclass": "Divider",
-            #     "height": dp(1),
-            #     "on_release": lambda: None,
-            # },
+            {
+                "viewclass": "Divider",
+                "height": dp(1),
+                "on_release": lambda: None,
+            },
+            {
+                "text": "Settings",
+                "viewclass": "OneLineListItem",
+                "on_release": lambda x="Settings": self.select_menu("settings"),
+            },
             # {
             #     "text": "Restore from Download",
             #     "viewclass": "OneLineListItem",
@@ -101,6 +107,9 @@ class EventList(MDScreen):
 
         if item == "partners":
             self.go_partners()
+
+        elif item == "settings":
+            self.go_settings_form()
 
         # elif item == "events":
         #     self.refresh_events()

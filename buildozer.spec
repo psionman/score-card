@@ -7,6 +7,7 @@ source.dir = .
 source.include_exts = py,png,jpg,kv,atlas,ttf
 source.include_patterns = src/score_card/fonts/*.ttf
 icon.filename = src/score_card/images/score_card_icon.png
+presplash.filename = src/score_card/images/score_card_splash.png
 
 
 requirements = python3,kivy==2.2.1,pillow,kivymd==1.2.0,android,androidstorage4kivy

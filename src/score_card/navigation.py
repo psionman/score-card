@@ -24,3 +24,6 @@ class NavigationService:
 
     def board_form(self):
         self.go("board_form")
+
+    def settings_form(self):
+        self.go("settings_form")

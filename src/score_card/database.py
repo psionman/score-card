@@ -27,6 +27,16 @@ def init_db():
     cur = conn.cursor()
 
     # -----------------------
+    # SETTINGS
+    # -----------------------
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS settings (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            email_address TEXT NOT NULL
+        );
+    """)
+
+    # -----------------------
     # PARTNERS
     # -----------------------
     cur.execute("""

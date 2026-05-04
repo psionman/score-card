@@ -1,40 +1,40 @@
-# repositories/partners.py
+# repositories/settings.py
 
 from database import get_connection
 
 
-class PartnerRepository:
+class SettingsRepository:
     @staticmethod
-    def create(name: str, ebu_number: str):
+    def create(email_address: str):
         conn = get_connection()
         cur = conn.cursor()
 
         cur.execute(
             """
-            INSERT INTO partners (name, ebu_number)
-            VALUES (?, ?)
+            INSERT INTO settings (email_address)
+            VALUES (?)
         """,
-            (name, ebu_number),
+            (email_address,),
         )
 
         conn.commit()
-        partner_id = cur.lastrowid
+        settings_id = 1
         conn.close()
 
-        return partner_id
+        return settings_id
 
     @staticmethod
-    def get_by_id(partner_id: int):
+    def get_by_id(settings_id: int):
         conn = get_connection()
         cur = conn.cursor()
 
         cur.execute(
             """
-            SELECT id, name, ebu_number
-            FROM partners
+            SELECT id, email_address
+            FROM settings
             WHERE id = ?
         """,
-            (partner_id,),
+            (1,),
         )
 
         row = cur.fetchone()
@@ -48,8 +48,8 @@ class PartnerRepository:
         cur = conn.cursor()
 
         cur.execute("""
-            SELECT id, name, ebu_number
-            FROM partners
+            SELECT id, email_address
+            FROM settings
             ORDER BY name ASC
         """)
 
@@ -60,17 +60,17 @@ class PartnerRepository:
 
     # UPDATE
     @staticmethod
-    def update(partner_id: int, name: str, ebu_number: str):
+    def update(email_address: str):
         conn = get_connection()
         cur = conn.cursor()
 
         cur.execute(
             """
-            UPDATE partners
-            SET name = ?, ebu_number = ?
+            UPDATE settings
+            SET email_address = ?
             WHERE id = ?
         """,
-            (name, ebu_number, partner_id),
+            (email_address, 1),
         )
 
         conn.commit()
@@ -78,16 +78,16 @@ class PartnerRepository:
 
     # DELETE (optional, see note below)
     @staticmethod
-    def delete(partner_id: int):
+    def delete():
         conn = get_connection()
         cur = conn.cursor()
 
         cur.execute(
             """
-            DELETE FROM partners
+            DELETE FROM settings
             WHERE id = ?
         """,
-            (partner_id,),
+            (1,),
         )
 
         conn.commit()
