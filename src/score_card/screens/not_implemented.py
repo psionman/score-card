@@ -1,5 +1,4 @@
 from pathlib import Path
-from kivy.app import App
 from kivymd.uix.screen import MDScreen
 from kivy.lang import Builder
 

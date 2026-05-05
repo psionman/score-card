@@ -6,10 +6,15 @@ from kivy.app import App
 from kivy.lang import Builder
 from kivy.metrics import dp
 from kivymd.uix.list import OneLineListItem
-from kivymd.uix.menu import MDDropdownMenu
 from kivymd.uix.screen import MDScreen
+from kivy.properties import StringProperty
+
+from custom_widgets import (
+    IconListItem, menu_divider, menu_icon_item, menu_handler)
+
 from services.event import EventService
 from services.partner import PartnerService
+
 
 Builder.load_file(str(Path(KV_DIR, "theme.kv")))
 Builder.load_file(str(Path(KV_DIR, "event_list.kv")))
@@ -17,8 +22,6 @@ Builder.load_file(str(Path(KV_DIR, "event_list.kv")))
 
 class EventList(MDScreen):
     def on_pre_enter(self):
-        # if self.event:
-        #     self.set_event(self.event)
         self.load_events()
 
     def load_events(self):
@@ -63,53 +66,18 @@ class EventList(MDScreen):
 
     def open_menu(self, caller):
         menu_items = [
-            {
-                "text": "Partners",
-                "viewclass": "OneLineListItem",
-                "on_release": lambda x="Partners": self.select_menu("partners"),
-            },
-            {
-                "viewclass": "Divider",
-                "height": dp(1),
-                "on_release": lambda: None,
-            },
-            {
-                "text": "Settings",
-                "viewclass": "OneLineListItem",
-                "on_release": lambda x="Settings": self.select_menu("settings"),
-            },
-            # {
-            #     "text": "Restore from Download",
-            #     "viewclass": "OneLineListItem",
-            #     "on_release": lambda x="Restore": restore_from_download(self),
-            # },
-            # {
-            #     "text": "Backup DB",
-            #     "viewclass": "OneLineListItem",
-            #     "on_release": backup_db,
-            # },
-            # {
-            #     "text": "Restore DB",
-            #     "viewclass": "OneLineListItem",
-            #     "on_release": restore_db,
-            # },
+            menu_icon_item("Partners", "account-group", self.select_menu),
+            menu_divider,
+            menu_icon_item("Settings", "cog", self.select_menu),
         ]
-        self.menu = MDDropdownMenu(
-            caller=caller,
-            items=menu_items,
-            width_mult=4,
-        )
-        self.menu.open()
+        self.menu = menu_handler(caller, menu_items)
 
     def select_menu(self, item):
         if hasattr(self, "menu") and self.menu:
             self.menu.dismiss()
 
-        if item == "partners":
+        if item == "Partners":
             self.go_partners()
 
-        elif item == "settings":
+        elif item == "Settings":
             self.go_settings_form()
-
-        # elif item == "events":
-        #     self.refresh_events()

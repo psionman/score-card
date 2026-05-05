@@ -1,17 +1,20 @@
 # navigation.py
+from kivy.uix.screenmanager import SlideTransition
+
 class NavigationService:
     def __init__(self, screen_manager):
         self.sm = screen_manager
+        self.sm.transition = SlideTransition()
 
     def go(self, screen_name, direction="left"):
         self.sm.transition.direction = direction
         self.sm.current = screen_name
 
-    def home(self):
-        self.go("event_list", direction="right")
+    def event_list(self, direction="right"):
+        self.go("event_list", direction=direction)
 
-    def event_form(self):
-        self.go("event_form")
+    def event_form(self, direction="left"):
+        self.go("event_form", direction=direction)
 
     def partner_form(self):
         self.go("partner_form")
@@ -19,8 +22,8 @@ class NavigationService:
     def partner_list(self):
         self.go("partner_list")
 
-    def boards(self):
-        self.go("board_list")
+    def board_list(self, direction="left"):
+        self.go("board_list", direction=direction)
 
     def board_form(self):
         self.go("board_form")

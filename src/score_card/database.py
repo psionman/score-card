@@ -23,6 +23,7 @@ def get_connection():
 
 
 def init_db():
+    print('init_db')
     conn = get_connection()
     cur = conn.cursor()
 

@@ -19,7 +19,7 @@ from kivy.core.text import LabelBase
 from database import init_db
 from constants import BASE_DIR, DEBUG_SCREEN, INITIALISE_DB
 from navigation import NavigationService
-from screens.splash import Splash
+from services.settings import SettingsService
 
 from screens.partner_form import PartnerFormScreen
 from screens.partner_list import PartnerListScreen
@@ -48,6 +48,7 @@ class ScoreCard(MDApp):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.current_event = None
+        self.settings = None
 
     def set_event(self, event):
         self.current_event = event
@@ -61,12 +62,11 @@ class ScoreCard(MDApp):
 
         if INITIALISE_DB:
             init_db()
+        self.settings = SettingsService.get_settings(1)
 
         self.sm = ScreenManager(transition=FadeTransition(duration=0.3))
 
         self.nav = NavigationService(self.sm)
-
-        self.sm.add_widget(Splash(name="splash"))
 
         self.sm.add_widget(PartnerFormScreen(name="partner_form"))
         self.sm.add_widget(PartnerListScreen(name="partner_list"))
@@ -81,6 +81,6 @@ class ScoreCard(MDApp):
 
         self.sm.add_widget(NotImplementedForm(name="not_implemented_form"))
 
-        self.sm.current = DEBUG_SCREEN or "splash"
+        self.sm.current = DEBUG_SCREEN or "event_list"
 
         return self.sm

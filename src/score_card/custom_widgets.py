@@ -1,6 +1,8 @@
 # custom_widgets.py
 
 from pathlib import Path
+from typing import Callable
+
 from kivy.uix.button import Button
 from kivy.properties import BooleanProperty, ColorProperty
 from kivy.metrics import dp
@@ -9,13 +11,26 @@ from kivy.graphics import Color, RoundedRectangle
 from kivy.lang import Builder
 from kivy.factory import Factory
 from kivy.uix.widget import Widget
+from kivymd.uix.list import OneLineIconListItem, IconLeftWidget
+from kivymd.uix.menu import MDDropdownMenu
+from kivy.properties import StringProperty
 
 from constants import KV_DIR
 
 class Divider(Widget):
     pass
 
+Builder.load_string("""
+<IconListItem>:
+    IconLeftWidget:
+        icon: root.icon
+""")
+
+class IconListItem(OneLineIconListItem):
+    icon = StringProperty()
+
 Factory.register('Divider', cls=Divider)
+Factory.register('IconLeftWidget', cls=IconLeftWidget)
 
 class SuitButton(Button):
     selected = BooleanProperty(False)
@@ -46,3 +61,30 @@ class SuitButton(Button):
         self.color = (1, 1, 1, 1) if self.selected else self.suit_color
 
 Builder.load_file(str(Path(KV_DIR, "custom_widgets.kv")))
+
+def _get_menu_divider():
+    return {
+        "viewclass": "Divider",
+        "height": dp(1),
+        "on_release": lambda: None,
+    }
+menu_divider = _get_menu_divider()
+
+
+def menu_icon_item(text: str, icon: str, handler: Callable) -> dict:
+    return {
+            "text": text,
+            "icon": icon,
+            "viewclass": "IconListItem",
+            "on_release": lambda x=text: handler(text),
+        }
+
+def menu_handler(caller, menu_items: list):
+    menu_items = menu_items
+    menu = MDDropdownMenu(
+        caller=caller,
+        items=menu_items,
+        width_mult=4,
+    )
+    menu.open()
+    return menu

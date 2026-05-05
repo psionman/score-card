@@ -7,6 +7,7 @@ import traceback
 from pathlib import Path
 from models.event import Event
 from kivy.utils import platform
+from kivy.app import App
 
 
 def export_event_csv(event: Event) -> str:
@@ -66,6 +67,8 @@ def get_export_dir():
 
 
 def share_file_email(filepath: str) -> None:
+    settings = App.get_running_app().settings
+    email_address = settings.email_address if settings else ''
     try:
         from jnius import autoclass, cast
 
@@ -80,15 +83,16 @@ def share_file_email(filepath: str) -> None:
 
         with open(filepath, "r") as f:
             content = f.read()
+
         intent.putExtra(Intent.EXTRA_TEXT, String(content))
-        intent.putExtra(Intent.EXTRA_EMAIL, ["jeffwatkins2000@gmail.com"])
+        intent.putExtra(Intent.EXTRA_EMAIL, [email_address])
 
         activity = PythonActivity.mActivity
         title = cast("java.lang.CharSequence", String("Share"))
         chooser = Intent.createChooser(intent, title)
         activity.startActivity(chooser)
     except ImportError:
-        print(f">>> would share: {filepath}")
+        print(f">>> would email: {filepath} to '{email_address}'")
     except Exception as e:
         logging.error(f">>> share failed: {e}")
         logging.error(traceback.format_exc())

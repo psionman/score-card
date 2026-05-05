@@ -11,9 +11,14 @@ from kivy.properties import ObjectProperty
 from kivy.lang import Builder
 from kivy.clock import Clock
 from kivy.core.window import Window
+from kivy.metrics import dp
 
 from constants import KV_DIR
+from custom_widgets import IconListItem, menu_icon_item, menu_handler
+
+
 from services.event import EventService
+from services.export import export_event_csv
 from services.partner import PartnerService
 from screens.base_screen import BaseScreen
 
@@ -144,11 +149,11 @@ class EventForm(BaseScreen):
             )
 
         # 🔥 Always reset form state
-        self.set_event(None)
+        # self.set_event(None)
 
-        # 🔥 Navigate away (don’t keep stale state)
-        self.manager.transition.direction = "right"
-        self.manager.current = "event_list"
+        # # 🔥 Navigate away (don’t keep stale state)
+        # self.manager.transition.direction = "right"
+        # self.manager.current = "event_list"
 
     def set_event(self, event):
         self.event = event
@@ -184,13 +189,9 @@ class EventForm(BaseScreen):
         if not self.event:
             return
 
-        # screen = self.manager.get_screen("board_list")
-        # screen.event = self.event   # 👈 CRITICAL
-        # self.manager.current = "board_list"
-
         app = App.get_running_app()
         app.set_event(self.event)  # store current event globally if needed
-        app.nav.boards()
+        app.nav.board_list()
 
 
 
@@ -218,3 +219,24 @@ class EventForm(BaseScreen):
 
         self._close_modal(self.active_modal)
         self.active_modal = None
+
+    def open_menu(self, caller):
+        menu_items = [
+            menu_icon_item("Save", "content-save", self.select_menu),
+            menu_icon_item("Boards", "playlist-plus", self.select_menu),
+            menu_icon_item("Export", "export", self.select_menu),
+        ]
+        self.menu = menu_handler(caller, menu_items)
+
+    def select_menu(self, item):
+        if hasattr(self, "menu") and self.menu:
+            self.menu.dismiss()
+
+        if item == "Save":
+            self.save_event()
+
+        elif item == "Boards":
+            self.go_boards()
+
+        elif item == "Export":
+            export_event_csv(self.event)

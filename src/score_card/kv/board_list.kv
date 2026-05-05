@@ -6,7 +6,7 @@
 
         MDTopAppBar:
             title: f"{root.event.date} - {root.event.name}" if root.event else "Boards"
-            left_action_items: [["arrow-left", lambda x: app.nav.event_form()]]
+            left_action_items: [["arrow-left", lambda x: app.nav.event_form("right")]]
             right_action_items: [["export", lambda x: root.export_csv()]]
 
         #MDLabel:
