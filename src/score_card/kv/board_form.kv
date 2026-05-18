@@ -34,8 +34,6 @@
                     readonly: True
                     on_touch_down: (root.open_modal("orientation", self), True) if self.collide_point(*args[1].pos) else False
 
-
-
                 WhiteTextField:
                     id: opponents
                     hint_text: "Opponents (pair number)"
@@ -47,13 +45,11 @@
                     readonly: True
                     on_touch_down: (root.open_modal("contract", self), True) if self.collide_point(*args[1].pos) else False
 
-
                 WhiteTextField:
                     id: declarer
                     hint_text: "Declarer (N/S/E/W)"
                     readonly: True
                     on_touch_down: (root.open_modal("declarer", self), True) if self.collide_point(*args[1].pos) else False
-
 
                 WhiteTextField:
                     id: lead
@@ -65,7 +61,9 @@
                 WhiteTextField:
                     id: tricks
                     hint_text: "Tricks"
-                    input_filter: "int"
+                    readonly: True
+                    on_touch_down: (root.open_modal("tricks", self), True) if self.collide_point(*args[1].pos) else False
+
 
                 WhiteTextField:
                     id: score

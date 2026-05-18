@@ -19,11 +19,12 @@ from screens.lead_picker import LeadPicker
 Builder.load_file(str(Path(KV_DIR, "board_form.kv")))
 
 VUL_MAP = {
-    "O": {"label": "None",  "ns": False, "ew": False},
-    "N": {"label": "NS",    "ns": True,  "ew": False},
-    "E": {"label": "EW",    "ns": False, "ew": True},
-    "B": {"label": "Both",  "ns": True,  "ew": True},
+    "O": {"label": "None", "ns": False, "ew": False},
+    "N": {"label": "NS", "ns": True, "ew": False},
+    "E": {"label": "EW", "ns": False, "ew": True},
+    "B": {"label": "Both", "ns": True, "ew": True},
 }
+
 
 class BoardForm(MDScreen):
     board = ObjectProperty(None, allownone=True)
@@ -43,8 +44,9 @@ class BoardForm(MDScreen):
             {
                 "text": i,
                 "viewclass": "OneLineListItem",
-                "on_release": lambda x=i: self.set_item(field, x)
-            } for i in items
+                "on_release": lambda x=i: self.set_item(field, x),
+            }
+            for i in items
         ]
 
         self.menu = MDDropdownMenu(
@@ -79,8 +81,10 @@ class BoardForm(MDScreen):
             self.ids.tricks.text = ""
             self.ids.lead.text = ""
             self.ids.score.text = ""
-            self.ids.vulnerable.text = VUL_MAP[vulnerable]['label']
-            self.ids.orientation.text = last.orientation if last else self.orientation_default
+            self.ids.vulnerable.text = VUL_MAP[vulnerable]["label"]
+            self.ids.orientation.text = (
+                last.orientation if last else self.orientation_default
+            )
             self.ids.opponents.text = str(last.opponents) if last else ""
             self.ids.section.text = last.section if last else ""
             self.ids.team_score.text = ""
@@ -159,7 +163,7 @@ class BoardForm(MDScreen):
             {
                 "text": i,
                 "viewclass": "OneLineListItem",
-                "on_release": lambda x=i: self.commit(x)
+                "on_release": lambda x=i: self.commit(x),
             }
             for i in items
         ]
@@ -181,7 +185,7 @@ class BoardForm(MDScreen):
     def _show_lead(self):
         self.ids.lead.focus = False
 
-        if not hasattr(self, '_lead_modal'):
+        if not hasattr(self, "_lead_modal"):
             self._lead_modal = ModalView(
                 size_hint=(1, None),
                 height=dp(320),
@@ -236,20 +240,22 @@ class BoardForm(MDScreen):
             self._show_contract()
         elif name == "declarer":
             self._show_menu(field, ["N", "S", "E", "W"])
+        elif name == "tricks":
+            self._show_menu(field, [str(_) for _ in reversed(range(14))])
         elif name == "orientation":
             self._show_menu(field, ["NS", "EW"])
         elif name == "vulnerable":
             self._show_menu(field, ["None", "NS", "EW", "Both"])
 
     def _close_modal(self, name):
-        if name in ["declarer", "orientation", "vulnerable"]:
+        if name in ["declarer", "orientation", "vulnerable", "tricks"]:
             self.close_menu()
 
         elif name == "lead":
             self.toggle_lead_picker(False)
 
         elif name == "contract":
-            if hasattr(self, '_contract_modal'):
+            if hasattr(self, "_contract_modal"):
                 self._contract_modal.dismiss()
 
     def close_modal(self):
@@ -268,6 +274,8 @@ class BoardForm(MDScreen):
             self.ids.contract.text = value
         elif name == "declarer":
             self.ids.declarer.text = value
+        elif name == "tricks":
+            self.ids.tricks.text = value
         elif name == "orientation":
             self.ids.orientation.text = value
         elif name == "vulnerable":
@@ -282,10 +290,10 @@ class BoardForm(MDScreen):
         self.open_menu(field, ["NS", "EW"])
 
     def _show_vulnerable_picker(self, field):
-        self.open_menu(field, ["None","NS","EW","Both"])
+        self.open_menu(field, ["None", "NS", "EW", "Both"])
 
     def _show_declarer_picker(self, field):
-        self.open_menu(field, ["N","S","E","W"])
+        self.open_menu(field, ["N", "S", "E", "W"])
 
     def close_menu(self):
         if hasattr(self, "menu") and self.menu:
@@ -304,7 +312,7 @@ class BoardForm(MDScreen):
         except ValueError:
             return  # ignore incomplete input like "" or "-"
         vulnerable = self.get_vulnerability(board_number)
-        self.ids.vulnerable.text = VUL_MAP[vulnerable]['label']
+        self.ids.vulnerable.text = VUL_MAP[vulnerable]["label"]
 
     def on_kv_post(self, base_widget):
         # Lead modal
@@ -315,7 +323,6 @@ class BoardForm(MDScreen):
             auto_dismiss=True,
         )
         self._lead_modal.clear_widgets()
-
 
         def _position_bottom(modal, *args):
             modal.y = 0
@@ -330,7 +337,6 @@ class BoardForm(MDScreen):
 
         self._lead_modal.add_widget(self._lead_picker)
         self._lead_picker.bind(lead=self._on_lead_selected)
-
 
         # Contract modal
         self._contract_modal = ModalView(
@@ -368,7 +374,7 @@ class BoardForm(MDScreen):
         if focused:
             self._show_contract()
         else:
-            if hasattr(self, '_contract_modal'):
+            if hasattr(self, "_contract_modal"):
                 self._contract_modal.dismiss()
 
     def _on_contract_selected(self, _, value: str):
@@ -402,7 +408,7 @@ class BoardForm(MDScreen):
         if focused:
             self._show_lead()
         else:
-            if hasattr(self, '_lead_modal'):
+            if hasattr(self, "_lead_modal"):
                 self._lead_modal.dismiss()
 
     def _on_lead_selected(self, _, value: str):
@@ -420,11 +426,13 @@ class BoardForm(MDScreen):
         orientation = self.ids.orientation.text.strip()
 
         # Require all fields (but tricks can be "0")
-        if (not contract
-                or not declarer
-                or not vulnerable
-                or not orientation
-                or tricks_text == ""):
+        if (
+            not contract
+            or not declarer
+            or not vulnerable
+            or not orientation
+            or tricks_text == ""
+        ):
             self.ids.score.text = ""
             self.ids.imps.text = ""
             return
@@ -435,9 +443,7 @@ class BoardForm(MDScreen):
             return  # still typing invalid number
 
         our_contract = declarer in orientation
-        score = calculate_score(
-            contract, declarer, tricks, vulnerable, our_contract
-        )
+        score = calculate_score(contract, declarer, tricks, vulnerable, our_contract)
         self.ids.score.text = str(score)
 
         # imps = self.calculate_imps(score)
