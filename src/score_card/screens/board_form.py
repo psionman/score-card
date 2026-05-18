@@ -25,6 +25,8 @@ VUL_MAP = {
     "B": {"label": "Both", "ns": True, "ew": True},
 }
 
+SECTIONS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
 
 class BoardForm(MDScreen):
     board = ObjectProperty(None, allownone=True)
@@ -86,7 +88,7 @@ class BoardForm(MDScreen):
                 last.orientation if last else self.orientation_default
             )
             self.ids.opponents.text = str(last.opponents) if last else ""
-            self.ids.section.text = last.section if last else ""
+            self.ids.section.text = last.section if last else "A"
             self.ids.team_score.text = ""
             self.ids.imps.text = ""
             self.ids.notes_input.text = ""
@@ -102,7 +104,7 @@ class BoardForm(MDScreen):
         self.ids.vulnerable.text = board.vulnerable or ""
         self.ids.orientation.text = board.orientation or ""
         self.ids.opponents.text = str(board.opponents)
-        self.ids.section.text = board.section or ""
+        self.ids.section.text = board.section or "A"
         self.ids.team_score.text = str(board.team_score)
         self.ids.imps.text = str(board.imps)
         self.ids.imps.notes_input = str(board.notes)
@@ -155,7 +157,7 @@ class BoardForm(MDScreen):
                 **data,
             )
 
-        app.nav.boards()
+        app.nav.board_list("right")
 
     # Pickers
     def _show_menu(self, field, items):
@@ -242,13 +244,15 @@ class BoardForm(MDScreen):
             self._show_menu(field, ["N", "S", "E", "W"])
         elif name == "tricks":
             self._show_menu(field, [str(_) for _ in reversed(range(14))])
+        elif name == "section":
+            self._show_menu(field, [section for section in SECTIONS])
         elif name == "orientation":
             self._show_menu(field, ["NS", "EW"])
         elif name == "vulnerable":
             self._show_menu(field, ["None", "NS", "EW", "Both"])
 
     def _close_modal(self, name):
-        if name in ["declarer", "orientation", "vulnerable", "tricks"]:
+        if name in ["declarer", "orientation", "vulnerable", "tricks", "section"]:
             self.close_menu()
 
         elif name == "lead":
@@ -276,24 +280,14 @@ class BoardForm(MDScreen):
             self.ids.declarer.text = value
         elif name == "tricks":
             self.ids.tricks.text = value
+        elif name == "section":
+            self.ids.section.text = value
         elif name == "orientation":
             self.ids.orientation.text = value
         elif name == "vulnerable":
             self.ids.vulnerable.text = value
 
         self.close_modal()
-
-    def block_touch(self, touch):
-        return self.collide_point(*touch.pos)
-
-    def _show_orientation_picker(self, field):
-        self.open_menu(field, ["NS", "EW"])
-
-    def _show_vulnerable_picker(self, field):
-        self.open_menu(field, ["None", "NS", "EW", "Both"])
-
-    def _show_declarer_picker(self, field):
-        self.open_menu(field, ["N", "S", "E", "W"])
 
     def close_menu(self):
         if hasattr(self, "menu") and self.menu:
