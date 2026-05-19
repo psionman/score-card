@@ -60,6 +60,7 @@ class SectionList(MDScreen):
         self.sections = self.get_sections()
         for section in sections:
             imps = self.section_imps[section]
-            item = OneLineListItem(text=(f"Section {section} {imps}"))
+            imps_text = f"({imps} imps)" if imps else ""
+            item = OneLineListItem(text=(f"Section {section} {imps_text}"))
             item.bind(on_release=lambda x, s=section: self.open_section(s))
             self.ids.section_list.add_widget(item)
