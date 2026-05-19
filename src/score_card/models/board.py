@@ -1,30 +1,33 @@
-# models/board.py
-
-from dataclasses import dataclass
+from kivy.event import EventDispatcher
+from kivy.properties import (
+    NumericProperty,
+    StringProperty,
+    ObjectProperty,
+)
 from typing import Optional
 
 
-@dataclass
-class Board:
-    id: int
-    event_id: int
+class Board(EventDispatcher):
+    id = NumericProperty(0)
+    event_id = NumericProperty(0)
 
-    board_number: int
+    board_number = NumericProperty(0)
 
-    vulnerable: Optional[str]  # None | "NW" | "EW" | "All"
-    orientation: str  # "NS" | "EW"
+    vulnerable = StringProperty("")
+    orientation = StringProperty("NS")
 
-    opponents: int
+    opponents = NumericProperty(0)
 
-    contract: str
-    declarer: str  # "N" | "S" | "E" | "W"
-    lead: str
+    contract = StringProperty("")
+    declarer = StringProperty("")
+    lead = StringProperty("")
 
-    tricks: int
+    tricks = NumericProperty(0)
 
-    score: int  # can be negative
+    score = NumericProperty(0)
 
-    section: str
-    team_score: int  # can be negative
-    imps: int  # can be negative
-    notes: Optional[str] = ""
+    section = StringProperty("")
+    team_score = NumericProperty(0)
+    imps = NumericProperty(0)
+
+    notes = StringProperty("")

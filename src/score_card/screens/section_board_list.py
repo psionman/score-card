@@ -7,7 +7,7 @@ from kivy.metrics import dp
 from kivy.properties import ListProperty, ObjectProperty
 from kivy.uix.modalview import ModalView
 from kivymd.uix.screen import MDScreen
-from screens.board_row import BoardRow
+from screens.board_row import BoardHeader, BoardRow
 from screens.score_picker import ScorePicker
 from services.board import BoardService
 
@@ -48,25 +48,12 @@ class SectionBoardList(MDScreen):
         container.clear_widgets()
 
         # OPTIONAL HEADER
-        container.add_widget(
-            BoardRow(
-                board="Board",
-                score="Score",
-                team_score="Team",
-                imps="IMPs",
-            )
-        )
+        container.add_widget(BoardHeader())
 
         for board in value:
-            print(board)
-            container.add_widget(
-                BoardRow(
-                    board=str(board.board_number),
-                    score=str(board.score),
-                    team_score=str(board.team_score),
-                    imps=str(board.imps),
-                )
-            )
+            item = BoardRow(board=board)
+            container.add_widget(item)
+            item.bind(on_release=lambda x, b=board: self.open_board(b))
 
     def _enter_score(self):
         if not hasattr(self, "_score_modal"):
@@ -82,7 +69,7 @@ class SectionBoardList(MDScreen):
 
         picker = self._score_picker
         picker.parent_screen = self
-        picker.set_score(self.board.score)
+        picker.set_score(self.board.team_score)
         self._score_modal.open()
 
     def on_touch_up(self, touch):
@@ -103,7 +90,6 @@ class SectionBoardList(MDScreen):
         return super().on_touch_up(touch)
 
     def open_modal(self, name, field=None):
-        print(name)
         if self.active_modal == name:
             return
 
@@ -120,7 +106,6 @@ class SectionBoardList(MDScreen):
             self._enter_score()
 
     def _close_modal(self, name):
-
         if name == "score":
             self.toggle_score_picker(False)
 
@@ -131,32 +116,11 @@ class SectionBoardList(MDScreen):
         self._close_modal(self.active_modal)
         self.active_modal = None
 
-    # def commit(self, value):
-    #     name = self.active_modal
-
-    #     if name == "lead":
-    #         self.ids.lead.text = value
-    #     elif name == "contract":
-    #         self.ids.contract.text = value
-    #     elif name == "declarer":
-    #         self.ids.declarer.text = value
-    #     elif name == "tricks":
-    #         self.ids.tricks.text = value
-    #     elif name == "section":
-    #         self.ids.section.text = value
-    #     elif name == "orientation":
-    #         self.ids.orientation.text = value
-    #     elif name == "vulnerable":
-    #         self.ids.vulnerable.text = value
-
-    #     self.close_modal()
+    def update_score(self, score: str) -> None:
+        self.board.team_score = int(score)
 
     def _on_score_modal_dismissed(self, *args):
         self.active_modal = None
-
-    def _on_score_selected(self, _, value: str):
-        # self.ids.lead.text = value
-        print("score selected")
 
     def on_kv_post(self, base_widget):
         # Score modal
@@ -180,7 +144,6 @@ class SectionBoardList(MDScreen):
         )
 
         self._score_modal.add_widget(self._score_picker)
-        self._score_picker.bind(score=self._on_score_selected)
 
     def save_section(self):
         print("save section")

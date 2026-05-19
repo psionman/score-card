@@ -37,6 +37,8 @@ class ScorePicker(BoxLayout):
         self._score = ""
 
     def set_score(self, score: str) -> None:
+        if score == 0:
+            score = ""
         self._score = str(score)
         self.ids.score.text = self._score
 
@@ -88,4 +90,5 @@ class ScorePicker(BoxLayout):
         if not self._score:
             return
         print("C", self._score)
+        self.parent_screen.update_score(self._score)
         self.parent_screen._score_modal.dismiss()
