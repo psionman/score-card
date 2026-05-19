@@ -38,10 +38,10 @@ class NavigationService:
         self.sm.transition = SlideTransition(direction=direction)
         self.go("section_board_list", direction=direction)
 
-    def board_form(self, direction="left"):
+    def board_form(self, direction="right"):
         self.sm.transition = SlideTransition(direction=direction)
         self.go("board_form")
 
-    def settings_form(self, direction="left"):
+    def settings_form(self, direction="right"):
         self.sm.transition = SlideTransition(direction=direction)
         self.go("settings_form")

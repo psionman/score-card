@@ -7,3 +7,12 @@ INITIALISE_DB = True
 
 DEBUG_SCREEN = "board_form"  # set to None in production and edit splash.py
 DEBUG_SCREEN = None
+
+SUIT_LABELS = {"S": "♠", "H": "♥", "D": "♦", "C": "♣", "NT": "NT"}
+
+SUIT_MAP = {
+    "♠": ("S", "♠"),
+    "♥": ("H", "♥"),
+    "♦": ("D", "♦"),
+    "♣": ("C", "♣"),
+}

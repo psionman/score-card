@@ -1,22 +1,19 @@
-from pathlib import Path
 from datetime import datetime
-
-from kivy.app import App
-from kivymd.uix.menu import MDDropdownMenu
-from kivymd.uix.pickers import MDDatePicker
-from kivy.properties import ObjectProperty
-from kivy.lang import Builder
-from kivy.clock import Clock
-from kivy.core.window import Window
+from pathlib import Path
 
 from constants import KV_DIR
-from custom_widgets import menu_icon_item, menu_handler
-
-
+from custom_widgets import menu_handler, menu_icon_item
+from kivy.app import App
+from kivy.clock import Clock
+from kivy.core.window import Window
+from kivy.lang import Builder
+from kivy.properties import ObjectProperty
+from kivymd.uix.menu import MDDropdownMenu
+from kivymd.uix.pickers import MDDatePicker
+from screens.base_screen import BaseScreen
 from services.event import EventService
 from services.export import export_event_csv
 from services.partner import PartnerService
-from screens.base_screen import BaseScreen
 
 Builder.load_file(str(Path(KV_DIR, "theme.kv")))
 Builder.load_file(str(Path(KV_DIR, "event_form.kv")))
@@ -41,7 +38,7 @@ class EventForm(BaseScreen):
         return False
 
     def show_date_picker(self, textfield):
-        textfield.focus = False  # 🔥 IMPORTANT
+        textfield.focus = False
 
         def on_save(instance, value, date_range):
             textfield.text = value.strftime("%Y-%m-%d")
@@ -53,7 +50,9 @@ class EventForm(BaseScreen):
 
         if textfield.text:
             try:
-                initial_date = datetime.strptime(textfield.text, "%Y-%m-%d").date()
+                initial_date = datetime.strptime(
+                    textfield.text, "%Y-%m-%d"
+                ).date()
                 date_dialog.year = initial_date.year
                 date_dialog.month = initial_date.month
                 date_dialog.day = initial_date.day
@@ -101,7 +100,9 @@ class EventForm(BaseScreen):
         if widget.collide_point(*touch.pos):
             widget.focus = False
             Window.release_all_keyboards()
-            Clock.schedule_once(lambda dt: self._open_partner_menu(widget), 0.3)
+            Clock.schedule_once(
+                lambda dt: self._open_partner_menu(widget), 0.3
+            )
             return True
         return False
 
@@ -143,13 +144,6 @@ class EventForm(BaseScreen):
                 notes=notes,
             )
 
-        # 🔥 Always reset form state
-        # self.set_event(None)
-
-        # # 🔥 Navigate away (don’t keep stale state)
-        # self.manager.transition.direction = "right"
-        # self.manager.current = "event_list"
-
     def set_event(self, event):
         self.event = event
 
@@ -166,26 +160,24 @@ class EventForm(BaseScreen):
         self.ids.date_input.text = event.date
         self.ids.notes_input.text = event.notes or ""
 
-        # 🔥 IMPORTANT: load partner properly
         partner = PartnerService.get_partner(event.partner_id)
 
         if partner:
             self.selected_partner = partner
-            self.ids.partner_input.text = f"{partner.name} ({partner.ebu_number})"
+            self.ids.partner_input.text = (
+                f"{partner.name} ({partner.ebu_number})"
+            )
         else:
             # fallback safe state
             self.selected_partner = None
             self.ids.partner_input.text = "Unknown Partner"
-
-        # display ONLY
-        # self.ids.partner_input.text = f"{partner.name} ({partner.ebu_number})"
 
     def go_boards(self):
         if not self.event:
             return
 
         app = App.get_running_app()
-        app.set_event(self.event)  # store current event globally if needed
+        app.set_event(self.event)
         app.nav.board_list()
 
     def go_sections(self):
@@ -193,7 +185,7 @@ class EventForm(BaseScreen):
             return
 
         app = App.get_running_app()
-        app.set_event(self.event)  # store current event globally if needed
+        app.set_event(self.event)
         app.nav.section_list()
 
     def open_modal(self, name, field=None):

@@ -1,20 +1,17 @@
 # screens/lead_picker.py
 import re
-
 from pathlib import Path
 
+from constants import KV_DIR, SUIT_LABELS, SUIT_MAP
 from kivy.lang import Builder
-from kivy.properties import StringProperty, ObjectProperty
+from kivy.properties import ObjectProperty, StringProperty
 from kivy.uix.boxlayout import BoxLayout
-from kivymd.app import MDApp
 
-from custom_widgets import SuitButton
-from constants import KV_DIR
-
-LEAD_RE = r'^(10|[2-9JQKA])([SHDC♠♥♦♣])$'
+LEAD_RE = r"^(10|[2-9JQKA])([SHDC♠♥♦♣])$"
 
 
 _kv_loaded = False
+
 
 def _load_kv():
     global _kv_loaded
@@ -22,22 +19,25 @@ def _load_kv():
         Builder.load_file(str(Path(KV_DIR, "lead_picker.kv")))
         _kv_loaded = True
 
+
 _load_kv()
+
 
 class LeadPicker(BoxLayout):
     """
     Phone-friendly lead picker for Bridge.
     Exposes `lead` StringProperty (e.g. "K♥", "A♠", "10♦")
     """
+
     lead = StringProperty("")
     parent_screen = ObjectProperty(None, allownone=True)
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self._level = ""
-        self._suit = ""          # internal: S, H, D, C
-        self._suit_label = ""    # display: ♠, ♥, ♦, ♣
-        self._old_lead = ''
+        self._suit = ""  # internal: S, H, D, C
+        self._suit_label = ""  # display: ♠, ♥, ♦, ♣
+        self._old_lead = ""
 
     # ==================================================================
     # Selection handlers (called from .kv)
@@ -69,8 +69,9 @@ class LeadPicker(BoxLayout):
     # Highlight selected button
     # ==================================================================
     def _highlight(self, grid, selected_text: str):
+        print(f"{selected_text=}")
         for btn in grid.children:
-            btn.selected = (btn.text == selected_text)
+            btn.selected = btn.text == selected_text
 
     # ==================================================================
     # Public method: Pre-fill when editing an existing board
@@ -84,7 +85,7 @@ class LeadPicker(BoxLayout):
 
         self._old_lead = lead
         # Improved regex: handles 2-9, 10, J,Q,K,A + suit symbol
-        import re
+
         m = re.match(LEAD_RE, lead)
         if not m:
             print(f"[LeadPicker] Could not parse lead: {lead}")
@@ -93,12 +94,12 @@ class LeadPicker(BoxLayout):
         level = m.group(1)
         suit_symbol = m.group(2)
 
-        suit_map = {"♠": ("S", "♠"), "♥": ("H", "♥"),
-                    "♦": ("D", "♦"), "♣": ("C", "♣")}
-
-        if suit_symbol in suit_map:
-            suit_code, label = suit_map[suit_symbol]
-            self.select_level(level)
+        self.select_level(level)
+        self.select_suit(
+            suit_symbol, SUIT_LABELS.get(suit_symbol, suit_symbol)
+        )
+        if suit_symbol in SUIT_MAP:
+            suit_code, label = SUIT_MAP[suit_symbol]
             self.select_suit(suit_code, label)
         else:
             print(f"[LeadPicker] Unknown suit symbol: {suit_symbol}")

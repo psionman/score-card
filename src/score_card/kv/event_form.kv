@@ -5,7 +5,6 @@
         MDTopAppBar:
             title: "Event details"
             left_action_items: [["arrow-left", lambda x: app.nav.event_list("right")]]
-            # right_action_items: [["content-save", lambda x: root.save_event()]]
             right_action_items: [["dots-vertical", lambda x: root.open_menu(x)]]
 
         MDBoxLayout:
@@ -37,9 +36,6 @@
                 focus: False
                 readonly: True
                 icon_right: "menu-down"
-                #on_touch_up: self.collide_point(*args[1].pos) and root.open_partner_menu(self)
-                #on_touch_down: (root.open_modal("partner_input", self), True) if self.collide_point(*args[1].pos) else False
-
                 on_focus: self.focus = False  # nuclear option: immediately kill focus
                 on_touch_down: root.handle_partner_touch(self, args[1])
 
@@ -54,10 +50,3 @@
 
             Widget:
                 size_hint_y: 1
-
-            #MDRaisedButton:
-                #text: "Boards"
-                #pos_hint: {"center_x": 0.5}
-                #opacity: 1 if root.event else 0
-                #disabled: False if root.event else True
-                #on_release: root.go_boards()

@@ -1,21 +1,20 @@
 # screens/board_form.py
 from pathlib import Path
 
-from kivy.properties import ObjectProperty, StringProperty
-from kivymd.uix.screen import MDScreen
-from kivymd.uix.menu import MDDropdownMenu
-from kivy.uix.modalview import ModalView
+from constants import KV_DIR
 from kivy.app import App
 from kivy.lang import Builder
 from kivy.metrics import dp
-
-from custom_widgets import SuitButton
-from constants import KV_DIR
+from kivy.properties import ObjectProperty, StringProperty
+from kivy.uix.modalview import ModalView
+from kivymd.uix.menu import MDDropdownMenu
+from kivymd.uix.screen import MDScreen
 from scoring import calculate_score
-from services.board import BoardService
 from screens.contract_picker import ContractPicker
 from screens.lead_picker import LeadPicker
+from services.board import BoardService
 
+Builder.load_file(str(Path(KV_DIR, "theme.kv")))
 Builder.load_file(str(Path(KV_DIR, "board_form.kv")))
 
 VUL_MAP = {
@@ -252,7 +251,13 @@ class BoardForm(MDScreen):
             self._show_menu(field, ["None", "NS", "EW", "Both"])
 
     def _close_modal(self, name):
-        if name in ["declarer", "orientation", "vulnerable", "tricks", "section"]:
+        if name in [
+            "declarer",
+            "orientation",
+            "vulnerable",
+            "tricks",
+            "section",
+        ]:
             self.close_menu()
 
         elif name == "lead":
@@ -342,7 +347,9 @@ class BoardForm(MDScreen):
         self._contract_modal.bind(on_open=_position_bottom)
         self._contract_modal.bind(on_dismiss=self._on_contract_modal_dismissed)
 
-        self._contract_picker = ContractPicker(size_hint=(1, 1), parent_screen=self)
+        self._contract_picker = ContractPicker(
+            size_hint=(1, 1), parent_screen=self
+        )
         self._contract_modal.add_widget(self._contract_picker)
         self._contract_picker.bind(contract=self._on_contract_selected)
 
@@ -417,7 +424,9 @@ class BoardForm(MDScreen):
             return  # still typing invalid number
 
         our_contract = declarer in orientation
-        score = calculate_score(contract, declarer, tricks, vulnerable, our_contract)
+        score = calculate_score(
+            contract, declarer, tricks, vulnerable, our_contract
+        )
         self.ids.score.text = str(score)
 
         # imps = self.calculate_imps(score)
