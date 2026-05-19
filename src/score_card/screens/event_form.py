@@ -2,19 +2,15 @@ from pathlib import Path
 from datetime import datetime
 
 from kivy.app import App
-from kivymd.uix.screen import MDScreen
 from kivymd.uix.menu import MDDropdownMenu
 from kivymd.uix.pickers import MDDatePicker
-from kivymd.uix.dialog import MDDialog
-from kivymd.uix.button import MDFlatButton
 from kivy.properties import ObjectProperty
 from kivy.lang import Builder
 from kivy.clock import Clock
 from kivy.core.window import Window
-from kivy.metrics import dp
 
 from constants import KV_DIR
-from custom_widgets import IconListItem, menu_icon_item, menu_handler
+from custom_widgets import menu_icon_item, menu_handler
 
 
 from services.event import EventService
@@ -35,7 +31,6 @@ class EventForm(BaseScreen):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-
 
     def handle_date_touch(self, widget, touch):
         if widget.collide_point(*touch.pos):
@@ -193,7 +188,13 @@ class EventForm(BaseScreen):
         app.set_event(self.event)  # store current event globally if needed
         app.nav.board_list()
 
+    def go_sections(self):
+        if not self.event:
+            return
 
+        app = App.get_running_app()
+        app.set_event(self.event)  # store current event globally if needed
+        app.nav.section_list()
 
     def open_modal(self, name, field=None):
         if self.active_modal == name:
@@ -224,6 +225,7 @@ class EventForm(BaseScreen):
         menu_items = [
             menu_icon_item("Save", "content-save", self.select_menu),
             menu_icon_item("Boards", "playlist-plus", self.select_menu),
+            menu_icon_item("Sections", "trophy", self.select_menu),
             menu_icon_item("Export", "export", self.select_menu),
         ]
         self.menu = menu_handler(caller, menu_items)
@@ -237,6 +239,9 @@ class EventForm(BaseScreen):
 
         elif item == "Boards":
             self.go_boards()
+
+        elif item == "Sections":
+            self.go_sections()
 
         elif item == "Export":
             export_event_csv(self.event)

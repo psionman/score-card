@@ -1,0 +1,20 @@
+<SectionBoardList>:
+    MDBoxLayout:
+        orientation: "vertical"
+
+        MDTopAppBar:
+            title: f"{root.event.date} - {root.event.name}" if root.event else "Sections"
+            left_action_items: [["arrow-left", lambda x: app.nav.section_list("right")]]
+            right_action_items: [["content-save", lambda x: root.save_section()]]
+
+        ScrollView:
+            do_scroll_x: False
+
+            MDBoxLayout:
+                id: board_list
+                orientation: "vertical"
+                size_hint_y: None
+                height: self.minimum_height
+                size_hint_x: 1
+                padding: dp(8)
+                spacing: dp(4)

@@ -378,26 +378,6 @@ class BoardForm(MDScreen):
         self.active_modal = None
 
     # Lead
-    def _show_lead_picker(self):
-
-        picker = self._lead_picker
-        picker.parent_screen = self
-
-        # ensure clean state
-        picker.reset()
-
-        # preload existing value
-        picker.set_lead(self.ids.lead.text or "")
-
-        # show UI
-        self.toggle_lead_picker(True)
-
-        # remove focus last (prevents re-trigger issues)
-        self.ids.lead.focus = False
-
-    def _hide_lead_picker(self):
-        self.toggle_lead_picker(False)
-
     def toggle_lead_picker(self, focused: bool):
         if focused:
             self._show_lead()

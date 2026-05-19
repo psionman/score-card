@@ -12,7 +12,7 @@ if os.environ.get("KIVY_BUILD") != "android":
     Config.set("graphics", "dpi", "160")
     Config.set("graphics", "resizable", "0")
 
-from kivy.uix.screenmanager import ScreenManager, FadeTransition
+from kivy.uix.screenmanager import ScreenManager, FadeTransition, NoTransition
 from kivymd.app import MDApp
 from kivy.core.text import LabelBase
 
@@ -31,7 +31,9 @@ from screens.settings_form import SettingsFormScreen
 
 from screens.board_form import BoardForm
 from screens.board_list import BoardList
-from screens.contract_picker import ContractPicker
+
+from screens.section_list import SectionList
+from screens.section_board_list import SectionBoardList
 
 from screens.not_implemented import NotImplementedForm
 
@@ -44,6 +46,19 @@ LabelBase.register(
 class ScoreCard(MDApp):
     title = "Score card"
     icon = "src/score_card/images/score_card_icon.png"
+
+    SCREENS = [
+        ("partner_form", PartnerFormScreen),
+        ("partner_list", PartnerListScreen),
+        ("event_form", EventForm),
+        ("event_list", EventList),
+        ("board_form", BoardForm),
+        ("board_list", BoardList),
+        ("section_list", SectionList),
+        ("section_board_list", SectionBoardList),
+        ("settings_form", SettingsFormScreen),
+        ("not_implemented_form", NotImplementedForm),
+    ]
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -62,25 +77,19 @@ class ScoreCard(MDApp):
 
         if INITIALISE_DB:
             init_db()
+
         self.settings = SettingsService.get_settings(1)
 
-        self.sm = ScreenManager(transition=FadeTransition(duration=0.3))
+        self.sm = ScreenManager(transition=NoTransition())
 
         self.nav = NavigationService(self.sm)
 
-        self.sm.add_widget(PartnerFormScreen(name="partner_form"))
-        self.sm.add_widget(PartnerListScreen(name="partner_list"))
-
-        self.sm.add_widget(EventForm(name="event_form"))
-        self.sm.add_widget(EventList(name="event_list"))
-
-        self.sm.add_widget(BoardForm(name="board_form"))
-        self.sm.add_widget(BoardList(name="board_list"))
-
-        self.sm.add_widget(SettingsFormScreen(name="settings_form"))
-
-        self.sm.add_widget(NotImplementedForm(name="not_implemented_form"))
+        for name, screen_class in self.SCREENS:
+            self.sm.add_widget(screen_class(name=name))
 
         self.sm.current = DEBUG_SCREEN or "event_list"
+
+        # enable animation AFTER initial screen is set
+        self.sm.transition = FadeTransition(duration=0.3)
 
         return self.sm

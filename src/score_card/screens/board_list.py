@@ -3,7 +3,6 @@ from kivymd.uix.screen import MDScreen
 from kivymd.uix.list import OneLineListItem
 from kivy.lang import Builder
 from kivy.app import App
-from kivymd.toast import toast
 
 from pathlib import Path
 
@@ -13,6 +12,7 @@ from services.export import export_event_csv
 from utilities import show_message
 
 Builder.load_file(str(Path(KV_DIR, "board_list.kv")))
+
 
 class BoardList(MDScreen):
     event = ObjectProperty(None, allownone=True)
@@ -45,8 +45,10 @@ class BoardList(MDScreen):
 
         for board in value:
             item = OneLineListItem(
-                text=(f"Board {board.board_number} - {board.contract} "
-                      f"by {board.declarer}: {board.score}")
+                text=(
+                    f"Board {board.board_number} - {board.contract} "
+                    f"by {board.declarer}: {board.score}"
+                )
             )
             item.bind(on_release=lambda x, b=board: self.open_board(b))
             self.ids.board_list.add_widget(item)
@@ -56,4 +58,4 @@ class BoardList(MDScreen):
         path = export_event_csv(self.event)
         # show a toast/snackbar
         # toast(f"Saved to {path}")?
-        show_message('Export Event', f"Saved in :\n{path.name}")
+        show_message("Export Event", f"Saved in :\n{path.name}")

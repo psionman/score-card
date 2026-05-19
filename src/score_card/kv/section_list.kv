@@ -1,0 +1,16 @@
+<SectionList>:
+    MDBoxLayout:
+        orientation: "vertical"
+        spacing: 0
+        padding: 0
+
+        MDTopAppBar:
+            title: f"{root.event.date} - {root.event.name}" if root.event else "Sections"
+            left_action_items: [["arrow-left", lambda x: app.nav.event_form("right")]]
+
+        ScrollView:
+            do_scroll_x: False
+            MDList:
+                id: section_list
+                size_hint_y: None
+                height: self.minimum_height
