@@ -11,6 +11,33 @@ from screens.board_row import BoardHeader, BoardRow
 from screens.score_picker import ScorePicker
 from services.board import BoardService
 
+IMP_TABLE = [
+    (10, 0),
+    (40, 1),
+    (80, 2),
+    (120, 3),
+    (160, 4),
+    (210, 5),
+    (260, 6),
+    (310, 7),
+    (360, 8),
+    (420, 9),
+    (490, 10),
+    (590, 11),
+    (740, 12),
+    (890, 13),
+    (1090, 14),
+    (1290, 15),
+    (1490, 16),
+    (1740, 17),
+    (1990, 18),
+    (2240, 19),
+    (2490, 20),
+    (2990, 21),
+    (3490, 22),
+    (3990, 23),
+]
+
 Builder.load_file(str(Path(KV_DIR, "section_board_list.kv")))
 
 
@@ -19,6 +46,7 @@ class SectionBoardList(MDScreen):
     boards = ListProperty([])
     active_modal = None
     board = None
+    parent_screen = None
 
     def on_pre_enter(self):
         app = App.get_running_app()
@@ -35,21 +63,18 @@ class SectionBoardList(MDScreen):
     def set_section(self, section):
         self.section = section
 
+    def set_parent(self, parent):
+        self.parent_screen = parent
+
     def open_board(self, board):
         self.board = board
         self.open_modal("score")
-        # score_picker = self.manager.get_screen("score_picker")
-        # score_picker.set_board(board)
-        # section_board_list.set_section(section)
-        # self.manager.current = "section_board_list"
 
     def on_boards(self, instance, value):
         container = self.ids.board_list
         container.clear_widgets()
 
-        # OPTIONAL HEADER
         container.add_widget(BoardHeader())
-
         for board in value:
             item = BoardRow(board=board)
             container.add_widget(item)
@@ -118,6 +143,19 @@ class SectionBoardList(MDScreen):
 
     def update_score(self, score: str) -> None:
         self.board.team_score = int(score)
+        diff = self.board.score + self.board.team_score
+        imps = self.score_to_imps(diff)
+        if diff < 0:
+            imps = -1 * imps
+        self.board.imps = imps
+
+    @staticmethod
+    def score_to_imps(diff: int) -> int:
+        d = abs(diff)
+        for limit, imps in IMP_TABLE:
+            if d <= limit:
+                return imps
+        return 24
 
     def _on_score_modal_dismissed(self, *args):
         self.active_modal = None
@@ -146,4 +184,23 @@ class SectionBoardList(MDScreen):
         self._score_modal.add_widget(self._score_picker)
 
     def save_section(self):
-        print("save section")
+        for board in self.boards:
+            data = {
+                "board_number": board.board_number,
+                "contract": board.contract,
+                "declarer": board.declarer,
+                "tricks": board.tricks,
+                "lead": board.lead,
+                "score": board.score,
+                "vulnerable": board.vulnerable,
+                "orientation": board.orientation,
+                "opponents": board.opponents,
+                "section": board.section,
+                "notes": board.notes,
+                "team_score": int(board.team_score),
+                "imps": int(board.imps),
+            }
+            BoardService.update_board(board.id, **data)
+        self.parent_screen.update_sections()
+        app = App.get_running_app()
+        app.nav.section_list("right")

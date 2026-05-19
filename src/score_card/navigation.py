@@ -8,7 +8,6 @@ class NavigationService:
         self.sm.transition = SlideTransition()
 
     def go(self, screen_name, direction="left"):
-        print(screen_name)
         self.sm.transition.direction = direction
         self.sm.current = screen_name
 

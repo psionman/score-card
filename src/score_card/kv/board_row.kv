@@ -1,24 +1,4 @@
-<BoardRow>:
-    orientation: "horizontal"
-    size_hint_y: None
-    height: dp(36)
-    ripple_behavior: True
-
-    MDLabel:
-        text: str(root.board.board_number)
-        halign: "center"
-
-    MDLabel:
-        text: str(root.board.score)
-        halign: "center"
-
-    MDLabel:
-        text: str(root.board.team_score)
-        halign: "center"
-
-    MDLabel:
-        text: str(root.board.imps)
-        halign: "center"
+# kv/board_row.kv
 
 <BoardHeader>:
     orientation: "horizontal"
@@ -27,16 +7,38 @@
 
     MDLabel:
         text: "Board"
-        halign: "center"
+        halign: "right"
 
     MDLabel:
         text: "Score"
-        halign: "center"
+        halign: "right"
 
     MDLabel:
         text: "Team"
-        halign: "center"
+        halign: "right"
 
     MDLabel:
         text: "IMPs"
-        halign: "center"
+        halign: "right"
+
+<BoardRow>:
+    orientation: "horizontal"
+    size_hint_y: None
+    height: dp(36)
+    ripple_behavior: True
+
+    MDLabel:
+        text: str(root.board.board_number)
+        halign: "right"
+
+    MDLabel:
+        text: str(root.board.score)
+        halign: "right"
+
+    MDLabel:
+        text: str(root.board.team_score)
+        halign: "right"
+
+    MDLabel:
+        text: str(root.board.imps)
+        halign: "right"

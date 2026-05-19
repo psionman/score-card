@@ -54,6 +54,9 @@
             text: "9"
             on_release: root.add_score_digit("9")
         SuitButton:
+            text: "+/-"
+            on_release: root.toggle_polarity()
+        SuitButton:
             text: "0"
             on_release: root.add_score_digit("0")
         SuitButton:

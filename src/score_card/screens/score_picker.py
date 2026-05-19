@@ -83,12 +83,21 @@ class ScorePicker(BoxLayout):
             for btn in grid.children:
                 btn.selected = False
 
+    def toggle_polarity(self) -> None:
+        if not self._score:
+            self._score = "-"
+        elif self._score[0] == "-":
+            self._score = self._score[1:]
+        else:
+            self._score = f"-{self._score}"
+        self.ids.score.text = self._score
+
     def cancel(self):
         self.parent_screen._score_modal.dismiss()
 
     def confirm(self):
         if not self._score:
             return
-        print("C", self._score)
+
         self.parent_screen.update_score(self._score)
         self.parent_screen._score_modal.dismiss()
