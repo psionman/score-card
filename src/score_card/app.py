@@ -12,31 +12,23 @@ if os.environ.get("KIVY_BUILD") != "android":
     Config.set("graphics", "dpi", "160")
     Config.set("graphics", "resizable", "0")
 
-from kivy.uix.screenmanager import ScreenManager, FadeTransition, NoTransition
-from kivymd.app import MDApp
-from kivy.core.text import LabelBase
-
-from database import init_db
 from constants import BASE_DIR, DEBUG_SCREEN, INITIALISE_DB
+from database import init_db
+from kivy.core.text import LabelBase
+from kivy.uix.screenmanager import FadeTransition, NoTransition, ScreenManager
+from kivymd.app import MDApp
 from navigation import NavigationService
-from services.settings import SettingsService
-
-from screens.partner_form import PartnerFormScreen
-from screens.partner_list import PartnerListScreen
-
-from screens.event_form import EventForm
-from screens.event_list import EventList
-
-from screens.settings_form import SettingsFormScreen
-
 from screens.board_form import BoardForm
 from screens.board_list import BoardList
-
-from screens.section_list import SectionList
-from screens.section_board_list import SectionBoardList
-
+from screens.event_form import EventForm
+from screens.event_list import EventList
 from screens.not_implemented import NotImplementedForm
-
+from screens.partner_form import PartnerFormScreen
+from screens.partner_list import PartnerListScreen
+from screens.section_board_list import SectionBoardList
+from screens.section_list import SectionList
+from screens.settings_form import SettingsFormScreen
+from services.settings import SettingsService
 
 LabelBase.register(
     "DejaVuSans", fn_regular=str(Path(BASE_DIR, "fonts", "DejaVuSans.ttf"))
@@ -89,7 +81,6 @@ class ScoreCard(MDApp):
 
         self.sm.current = DEBUG_SCREEN or "event_list"
 
-        # enable animation AFTER initial screen is set
         self.sm.transition = FadeTransition(duration=0.3)
 
         return self.sm
