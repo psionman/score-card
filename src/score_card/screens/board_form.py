@@ -92,7 +92,7 @@ class BoardForm(MDScreen):
                 str(app.last_board.opponents) if app.last_board else ""
             )
             self.ids.section.text = (
-                str(app.last_board.section_id) if app.last_board else "A"
+                str(app.last_board.section) if app.last_board else "A"
             )
             self.ids.team_score.text = ""
             self.ids.imps.text = ""

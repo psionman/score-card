@@ -8,7 +8,6 @@ from kivymd.uix.list import OneLineListItem
 from kivymd.uix.screen import MDScreen
 from services.board import BoardService
 from services.export import export_event_csv
-from utilities import show_message
 
 Builder.load_file(str(Path(KV_DIR, "board_list.kv")))
 
@@ -60,5 +59,4 @@ class BoardList(MDScreen):
 
     def export_csv(self):
         self.event.boards = BoardService.get_boards_for_event(self.event.id)
-        path = export_event_csv(self.event)
-        show_message("Export Event", f"Saved in :\n{path.name}")
+        export_event_csv(self.event)

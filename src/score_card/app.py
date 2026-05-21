@@ -40,9 +40,9 @@ LabelBase.register(
 @dataclass
 class LastBoard:
     board_number: int = 0
-    orientation: str = ""
-    opponents: int = 0
-    section_id: int = 0
+    orientation: str = "N/S"
+    opponents: int = 1
+    section: str = "A"
 
 
 class ScoreCard(MDApp):
