@@ -48,7 +48,6 @@ class SectionList(MDScreen):
         section_board_list.set_parent(self)
         app = App.get_running_app()
         app.nav.section_board_list()
-        # self.manager.current = "section_board_list"
 
     def on_sections(self, instance, value):
         self.display_sections(value)

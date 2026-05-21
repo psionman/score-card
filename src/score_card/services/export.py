@@ -1,13 +1,13 @@
 # services/export.py
 import csv
-import os
 import logging
 import traceback
-
 from pathlib import Path
-from models.event import Event
-from kivy.utils import platform
+
 from kivy.app import App
+from kivy.utils import platform
+from models.event import Event
+from utilities import msg_dialog
 
 
 def export_event_csv(event: Event) -> str:
@@ -68,7 +68,7 @@ def get_export_dir():
 
 def share_file_email(filepath: str) -> None:
     settings = App.get_running_app().settings
-    email_address = settings.email_address if settings else ''
+    email_address = settings.email_address if settings else ""
     try:
         from jnius import autoclass, cast
 
@@ -81,7 +81,7 @@ def share_file_email(filepath: str) -> None:
         intent.setType("text/plain")
         intent.putExtra(Intent.EXTRA_SUBJECT, String("Score Card Export"))
 
-        with open(filepath, "r") as f:
+        with open(filepath) as f:
             content = f.read()
 
         intent.putExtra(Intent.EXTRA_TEXT, String(content))
@@ -91,11 +91,15 @@ def share_file_email(filepath: str) -> None:
         title = cast("java.lang.CharSequence", String("Share"))
         chooser = Intent.createChooser(intent, title)
         activity.startActivity(chooser)
+        msg_dialog("Export Complete", f"File shared to {email_address}")
     except ImportError:
-        print(f">>> would email: {filepath} to '{email_address}'")
+        msg_dialog(
+            "Export Complete", f"File would be emailed to {email_address}"
+        )
     except Exception as e:
         logging.error(f">>> share failed: {e}")
         logging.error(traceback.format_exc())
+        msg_dialog("Export Failed", f"Failed to share file: {e}")
 
 
 def export_partners_csv(partners: list) -> str:

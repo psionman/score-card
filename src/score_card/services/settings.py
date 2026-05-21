@@ -23,7 +23,7 @@ class SettingsService:
         if not row:
             return None
 
-        settings_id, email_address= row
+        settings_id, email_address = row
 
         return Settings(id=settings_id, email_address=email_address)
 
@@ -31,7 +31,10 @@ class SettingsService:
     def list_settingss():
         rows = SettingsRepository.get_all()
 
-        return [Settings(id=r[0], email_address=r[1], ebu_number=r[2]) for r in rows]
+        return [
+            Settings(id=r[0], email_address=r[1], ebu_number=r[2])
+            for r in rows
+        ]
 
     @staticmethod
     def update_settings(settings_id: int, email_address: str):
@@ -41,7 +44,7 @@ class SettingsService:
         if not existing:
             raise ValueError("Settings not found")
 
-        SettingsRepository.update(settings_id, email_address)
+        SettingsRepository.update(email_address)
 
     # SAFE DELETE
     @staticmethod

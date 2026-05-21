@@ -16,7 +16,7 @@ from screens.base_screen import BaseScreen
 from services.event import EventService
 from services.export import export_event_csv
 from services.partner import PartnerService
-from utilities import error_dialog
+from utilities import msg_dialog
 
 Builder.load_file(str(Path(KV_DIR, "theme.kv")))
 Builder.load_file(str(Path(KV_DIR, "event_form.kv")))
@@ -123,7 +123,7 @@ class EventForm(BaseScreen):
         notes = self.ids.notes_input.text
 
         if not name or not date or not self.selected_partner:
-            error_dialog(
+            msg_dialog(
                 "Name and Date and Partner are required",
                 "Please fill in all required fields",
             )

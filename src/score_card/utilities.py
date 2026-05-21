@@ -43,7 +43,7 @@ def suit_to_symbol(text: str) -> str:
     return f"{rank}{SUIT_LABELS.get(suit, suit)}"
 
 
-def error_dialog(title, message):
+def msg_dialog(title, message):
     dialog = MDDialog(
         title=title,
         text=message,
