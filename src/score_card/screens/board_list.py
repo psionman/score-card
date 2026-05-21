@@ -1,12 +1,11 @@
-from kivy.properties import ObjectProperty, ListProperty
-from kivymd.uix.screen import MDScreen
-from kivymd.uix.list import OneLineListItem
-from kivy.lang import Builder
-from kivy.app import App
-
 from pathlib import Path
 
 from constants import KV_DIR
+from kivy.app import App
+from kivy.lang import Builder
+from kivy.properties import ListProperty, ObjectProperty
+from kivymd.uix.list import OneLineListItem
+from kivymd.uix.screen import MDScreen
 from services.board import BoardService
 from services.export import export_event_csv
 from utilities import show_message
@@ -44,10 +43,17 @@ class BoardList(MDScreen):
         self.ids.board_list.clear_widgets()
 
         for board in value:
+            if board.declarer and board.contract:
+                continuation = f"by {board.declarer}: not scored"
+                if board.tricks:
+                    continuation = f"by {board.declarer}: {board.score}"
+            else:
+                continuation = "no declarer or contract"
+
             item = OneLineListItem(
                 text=(
                     f"Board {board.board_number} - {board.contract} "
-                    f"by {board.declarer}: {board.score}"
+                    f"{continuation}"
                 )
             )
             item.bind(on_release=lambda x, b=board: self.open_board(b))

@@ -1,16 +1,20 @@
-
-from repositories.event import EventRepository
-from services.partner import PartnerService
-from repositories.board import BoardRepository
+# /services/event.py
 
 from models.event import Event
+from repositories.board import BoardRepository
+from repositories.event import EventRepository
+from services.partner import PartnerService
 
 
 class EventService:
     @staticmethod
     def create_event(name, date, partner_id, location="", notes=""):
         return EventRepository.create(
-            name=name, date=date, partner_id=partner_id, location=location, notes=notes
+            name=name,
+            date=date,
+            partner_id=partner_id,
+            location=location,
+            notes=notes,
         )
 
     @staticmethod
@@ -74,3 +78,7 @@ class EventService:
     @staticmethod
     def add_board(event_id, board_name):
         return BoardRepository.create(event_id, board_name)
+
+    @staticmethod
+    def delete_event(event_id):
+        EventRepository.delete(event_id)

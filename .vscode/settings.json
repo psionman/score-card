@@ -1,10 +1,49 @@
-    {
-        "python.defaultInterpreterPath": "/home/jeff/projects/score-card/.venv/bin/python",
-        "[python]": {
+{
+    "python.defaultInterpreterPath": "/home/jeff/projects/score-card/.venv/bin/python",
+
+    "[python]": {
         "editor.defaultFormatter": "charliermarsh.ruff",
         "editor.formatOnSave": true,
         "editor.codeActionsOnSave": {
+            "source.fixAll.ruff": "explicit",
+            "source.organizeImports.ruff": "explicit"
+        }
+    },
+
+    // Optional but recommended
+    "ruff.format.args": [],
+    "ruff.lint.args": [],
+    "ruff.importStrategy": "fromEnvironment"
+
+
+    "editor.codeActionsOnSave": {
         "source.fixAll.ruff": "explicit",
         "source.organizeImports.ruff": "explicit"
-        }
-    }
+    },
+    "workbench.colorCustomizations": {
+        "activityBar.activeBackground": "#bbbbbb",
+        "activityBar.background": "#dddddd",
+        "activityBar.foreground": "#000000",
+
+        "activityBarBadge.background": "#dd5555",
+        "activityBarBadge.foreground": "#ffffff",
+
+        "statusBar.background": "#dddddd",
+        "statusBar.foreground": "#333333",
+
+        "statusBarItem.hoverBackground": "#bbbbbb",
+
+        "titleBar.activeBackground": "#dddddd",
+        "titleBar.activeForeground": "#333333",
+    },
+    {
+    "windsurf.model": "Cascade Base",           // or the fastest free model
+    "windsurf.cascade.autoContinue": true,     // Reduces manual credit waste
+    "editor.inlineSuggest.enabled": true,
+    "editor.acceptSuggestionOnEnter": "smart",
+    "windsurf.enableTabAutocomplete": true,
+    "windsurf.enableSupercomplete": true,      // If available on free
+    "ruff.format.args": [],
+    "python.formatting.provider": "none"       // Let Ruff handle formatting
+}
+}

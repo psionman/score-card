@@ -1,4 +1,3 @@
-
 from database import get_connection
 
 
@@ -27,15 +26,17 @@ class EventRepository:
         conn = get_connection()
         cur = conn.cursor()
 
-        cur.execute("""
+        cur.execute(
+            """
             UPDATE events
             SET name = ?, date = ?, partner_id = ?, location = ?, notes = ?
             WHERE id = ?
-        """, (name, date, partner_id, location, notes, event_id))
+        """,
+            (name, date, partner_id, location, notes, event_id),
+        )
 
         conn.commit()
         conn.close()
-
 
     @staticmethod
     def get_by_id(event_id):
@@ -71,3 +72,13 @@ class EventRepository:
         conn.close()
 
         return rows
+
+    @staticmethod
+    def delete(event_id):
+        conn = get_connection()
+        cur = conn.cursor()
+
+        cur.execute("DELETE FROM events WHERE id = ?", (event_id,))
+
+        conn.commit()
+        conn.close()

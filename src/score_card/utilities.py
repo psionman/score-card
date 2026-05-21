@@ -6,6 +6,8 @@ import traceback
 from constants import SUIT_LABELS
 from kivy.uix.label import Label
 from kivy.uix.popup import Popup
+from kivymd.uix.button import MDFlatButton
+from kivymd.uix.dialog import MDDialog
 
 
 def safe_execute(func):
@@ -39,3 +41,19 @@ def suit_to_symbol(text: str) -> str:
         return text
 
     return f"{rank}{SUIT_LABELS.get(suit, suit)}"
+
+
+def error_dialog(title, message):
+    dialog = MDDialog(
+        title=title,
+        text=message,
+        buttons=[
+            MDFlatButton(
+                text="CANCEL",
+                # theme_text_color="Custom",
+                # text_color=self.theme_cls.primary_color,
+                on_release=lambda x: dialog.dismiss(),
+            ),
+        ],
+    )
+    dialog.open()

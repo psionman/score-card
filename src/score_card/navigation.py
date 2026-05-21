@@ -4,9 +4,11 @@ from kivy.uix.screenmanager import SlideTransition
 
 class NavigationService:
     def __init__(self, screen_manager):
+
         self.sm = screen_manager
 
     def go(self, screen_name, direction="left"):
+
         self.sm.transition = SlideTransition(direction=direction)
         self.sm.current = screen_name
 

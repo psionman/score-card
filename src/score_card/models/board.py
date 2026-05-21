@@ -1,10 +1,9 @@
+# models/board.py
 from kivy.event import EventDispatcher
 from kivy.properties import (
     NumericProperty,
     StringProperty,
-    ObjectProperty,
 )
-from typing import Optional
 
 
 class Board(EventDispatcher):

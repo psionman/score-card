@@ -8,12 +8,15 @@ from kivy.clock import Clock
 from kivy.core.window import Window
 from kivy.lang import Builder
 from kivy.properties import ObjectProperty
+from kivymd.uix.button import MDFlatButton
+from kivymd.uix.dialog import MDDialog
 from kivymd.uix.menu import MDDropdownMenu
 from kivymd.uix.pickers import MDDatePicker
 from screens.base_screen import BaseScreen
 from services.event import EventService
 from services.export import export_event_csv
 from services.partner import PartnerService
+from utilities import error_dialog
 
 Builder.load_file(str(Path(KV_DIR, "theme.kv")))
 Builder.load_file(str(Path(KV_DIR, "event_form.kv")))
@@ -114,16 +117,15 @@ class EventForm(BaseScreen):
             self.partner_menu.dismiss()
 
     def save_event(self):
-        if not self.selected_partner:
-            self.show_snackbar("Partner is required")
-            return
-
         name = self.ids.name_input.text
         date = self.ids.date_input.text
         notes = self.ids.notes_input.text
 
-        if not name or not date:
-            self.show_snackbar("Name and Date are required")
+        if not name or not date or not self.selected_partner:
+            error_dialog(
+                "Name and Date and Partner are required",
+                "Please fill in all required fields",
+            )
             return
 
         if self.event:
@@ -137,12 +139,13 @@ class EventForm(BaseScreen):
             )
         else:
             # CREATE
-            EventService.create_event(
+            event_id = EventService.create_event(
                 name=name,
                 date=date,
                 partner_id=self.selected_partner.id,
                 notes=notes,
             )
+            self.event = EventService.get_event(event_id)
 
     def set_event(self, event):
         self.event = event
@@ -188,6 +191,38 @@ class EventForm(BaseScreen):
         app.set_event(self.event)
         app.nav.section_list()
 
+    def event_delete(self):
+        if not self.event:
+            return
+
+        dialog = MDDialog(
+            title="Delete Event",
+            text=f"Are you sure you want to delete '{self.event.name}'?",
+            buttons=[
+                MDFlatButton(
+                    text="CANCEL",
+                    on_release=lambda x: dialog.dismiss(),
+                ),
+                MDFlatButton(
+                    text="DELETE",
+                    on_release=lambda x: self._confirm_delete(dialog),
+                ),
+            ],
+        )
+
+        dialog.open()
+
+    def _confirm_delete(self, dialog):
+        dialog.dismiss()
+
+        EventService.delete_event(self.event.id)
+
+        self.event = None
+        self.set_event(None)
+
+        app = App.get_running_app()
+        app.nav.event_list("right")
+
     def open_modal(self, name, field=None):
         if self.active_modal == name:
             return
@@ -219,6 +254,7 @@ class EventForm(BaseScreen):
             menu_icon_item("Boards", "playlist-plus", self.select_menu),
             menu_icon_item("Sections", "trophy", self.select_menu),
             menu_icon_item("Export", "export", self.select_menu),
+            menu_icon_item("Delete", "trash-can-outline", self.select_menu),
         ]
         self.menu = menu_handler(caller, menu_items)
 
@@ -237,3 +273,6 @@ class EventForm(BaseScreen):
 
         elif item == "Export":
             export_event_csv(self.event)
+
+        elif item == "Delete":
+            self.event_delete()
