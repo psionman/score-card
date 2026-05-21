@@ -69,7 +69,6 @@ class LeadPicker(BoxLayout):
     # Highlight selected button
     # ==================================================================
     def _highlight(self, grid, selected_text: str):
-        print(f"{selected_text=}")
         for btn in grid.children:
             btn.selected = btn.text == selected_text
 
@@ -88,7 +87,6 @@ class LeadPicker(BoxLayout):
 
         m = re.match(LEAD_RE, lead)
         if not m:
-            print(f"[LeadPicker] Could not parse lead: {lead}")
             return
 
         level = m.group(1)

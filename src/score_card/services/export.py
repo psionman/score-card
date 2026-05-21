@@ -7,6 +7,7 @@ from pathlib import Path
 from kivy.app import App
 from kivy.utils import platform
 from models.event import Event
+from services.board import BoardService
 from utilities import msg_dialog
 
 
@@ -36,6 +37,7 @@ def export_event_csv(event: Event) -> str:
     with open(filepath, "w", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=fieldnames)
         writer.writeheader()
+        event.boards = BoardService.get_boards_for_event(event.id)
 
         for board in event.boards or []:
             writer.writerow(
@@ -55,7 +57,7 @@ def export_event_csv(event: Event) -> str:
                     "Notes": board.notes or "",
                 }
             )
-    share_file_email(filepath)
+    share_file_email(filepath, "Event")
     return filepath
 
 
@@ -66,7 +68,7 @@ def get_export_dir():
     return export_dir
 
 
-def share_file_email(filepath: str) -> None:
+def share_file_email(filepath: str, file_type: str = "") -> None:
     settings = App.get_running_app().settings
     email_address = settings.email_address if settings else ""
     try:
@@ -79,7 +81,9 @@ def share_file_email(filepath: str) -> None:
 
         intent = Intent(Intent.ACTION_SEND)
         intent.setType("text/plain")
-        intent.putExtra(Intent.EXTRA_SUBJECT, String("Score Card Export"))
+        intent.putExtra(
+            Intent.EXTRA_SUBJECT, String(f"Score Card Export - {file_type}")
+        )
 
         with open(filepath) as f:
             content = f.read()
@@ -91,7 +95,6 @@ def share_file_email(filepath: str) -> None:
         title = cast("java.lang.CharSequence", String("Share"))
         chooser = Intent.createChooser(intent, title)
         activity.startActivity(chooser)
-        msg_dialog("Export Complete", f"File shared to {email_address}")
     except ImportError:
         msg_dialog(
             "Export Complete", f"File would be emailed to {email_address}"
@@ -124,6 +127,7 @@ def export_partners_csv(partners: list) -> str:
                 }
             )
 
+    share_file_email(filepath, "Partners")
     return str(filepath)
 
 
