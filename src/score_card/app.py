@@ -1,7 +1,9 @@
 # app.py
 
+from dataclasses import dataclass
 import os
 from pathlib import Path
+from dataclasses import dataclass
 
 # Must be before any kivy imports when testing on desktop
 from kivy.config import Config
@@ -35,6 +37,14 @@ LabelBase.register(
 )
 
 
+@dataclass
+class LastBoard:
+    board_number: int = 0
+    orientation: str = ""
+    opponents: int = 0
+    section_id: int = 0
+
+
 class ScoreCard(MDApp):
     title = "Score card"
     icon = "src/score_card/images/score_card_icon.png"
@@ -56,9 +66,13 @@ class ScoreCard(MDApp):
         super().__init__(**kwargs)
         self.current_event = None
         self.settings = None
+        self.last_board = LastBoard()
 
     def set_event(self, event):
         self.current_event = event
+
+    def set_last_board(self, last_board: list):
+        self.last_board = LastBoard(*last_board)
 
     def get_event(self):
         return self.current_event

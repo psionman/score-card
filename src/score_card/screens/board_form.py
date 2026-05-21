@@ -73,9 +73,9 @@ class BoardForm(MDScreen):
         if not board:
             # New board → clear fields
             board_number = self.get_next_board_number()
+            app = App.get_running_app()
             vulnerable = self.get_vulnerability(board_number)
 
-            last = self._get_previous_board()
             self.ids.board_number.text = str(board_number)
             self.ids.contract.text = ""
             self.ids.declarer.text = ""
@@ -84,10 +84,16 @@ class BoardForm(MDScreen):
             self.ids.score.text = ""
             self.ids.vulnerable.text = VUL_MAP[vulnerable]["label"]
             self.ids.orientation.text = (
-                last.orientation if last else self.orientation_default
+                app.last_board.orientation
+                if app.last_board
+                else self.orientation_default
             )
-            self.ids.opponents.text = str(last.opponents) if last else ""
-            self.ids.section.text = last.section if last else "A"
+            self.ids.opponents.text = (
+                str(app.last_board.opponents) if app.last_board else ""
+            )
+            self.ids.section.text = (
+                app.last_board.section_id if app.last_board else "A"
+            )
             self.ids.team_score.text = ""
             self.ids.imps.text = ""
             self.ids.notes_input.text = ""
@@ -117,6 +123,7 @@ class BoardForm(MDScreen):
     def get_next_board_number(self):
         app = App.get_running_app()
         event = app.current_event
+        last_board = app.last_board if app.last_board else None
 
         if not event:
             return 1
@@ -126,7 +133,12 @@ class BoardForm(MDScreen):
         if not boards:
             return 1
 
-        return max(b.board_number for b in boards) + 1
+        board_ids = [int(board.board_number) for board in boards]
+        next_board = last_board.board_number + 1 if last_board else 1
+        while next_board in board_ids:
+            next_board += 1
+
+        return next_board
 
     def save_board(self):
         app = App.get_running_app()
@@ -155,7 +167,14 @@ class BoardForm(MDScreen):
                 event_id=event.id if event else None,
                 **data,
             )
-
+        app.set_last_board(
+            [
+                data["board_number"],
+                data["orientation"],
+                data["opponents"],
+                data["section"],
+            ]
+        )
         app.nav.board_list("right")
 
     # Pickers

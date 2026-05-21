@@ -16,6 +16,7 @@ class SectionList(MDScreen):
     sections = ListProperty([])
     section_boards = {}
     section_imps = {}
+    boards = ListProperty([])
 
     def on_pre_enter(self):
         app = App.get_running_app()
@@ -45,7 +46,9 @@ class SectionList(MDScreen):
         section_board_list = self.manager.get_screen("section_board_list")
         section_board_list.set_section(section)
         section_board_list.set_parent(self)
-        self.manager.current = "section_board_list"
+        app = App.get_running_app()
+        app.nav.section_board_list()
+        # self.manager.current = "section_board_list"
 
     def on_sections(self, instance, value):
         self.display_sections(value)

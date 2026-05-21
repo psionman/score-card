@@ -34,7 +34,6 @@ class BoardList(MDScreen):
         App.get_running_app().nav.board_form()
 
     def open_board(self, board):
-        print("Open board:", board)
         board_form = self.manager.get_screen("board_form")
         board_form.set_board(board)
         self.manager.current = "board_form"
@@ -53,7 +52,7 @@ class BoardList(MDScreen):
             item = OneLineListItem(
                 text=(
                     f"Board {board.board_number} - {board.contract} "
-                    f"{continuation}"
+                    f"{continuation} - {board.section}"
                 )
             )
             item.bind(on_release=lambda x, b=board: self.open_board(b))
@@ -62,6 +61,4 @@ class BoardList(MDScreen):
     def export_csv(self):
         self.event.boards = BoardService.get_boards_for_event(self.event.id)
         path = export_event_csv(self.event)
-        # show a toast/snackbar
-        # toast(f"Saved to {path}")?
         show_message("Export Event", f"Saved in :\n{path.name}")

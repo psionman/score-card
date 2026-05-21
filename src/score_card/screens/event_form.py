@@ -31,6 +31,7 @@ class EventForm(BaseScreen):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        self.app = App.get_running_app()
 
     def handle_date_touch(self, widget, touch):
         if widget.collide_point(*touch.pos):
@@ -179,17 +180,15 @@ class EventForm(BaseScreen):
         if not self.event:
             return
 
-        app = App.get_running_app()
-        app.set_event(self.event)
-        app.nav.board_list()
+        self.app.set_event(self.event)
+        self.app.nav.board_list()
 
     def go_sections(self):
         if not self.event:
             return
 
-        app = App.get_running_app()
-        app.set_event(self.event)
-        app.nav.section_list()
+        self.app.set_event(self.event)
+        self.app.nav.section_list()
 
     def event_delete(self):
         if not self.event:
@@ -197,7 +196,10 @@ class EventForm(BaseScreen):
 
         dialog = MDDialog(
             title="Delete Event",
-            text=f"Are you sure you want to delete '{self.event.name}'?",
+            text=(
+                "Are you sure you want to delete "
+                + f"'{self.event.name} - {self.event.date}'?"
+            ),
             buttons=[
                 MDFlatButton(
                     text="CANCEL",

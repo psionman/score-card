@@ -4,9 +4,15 @@
         orientation: "vertical"
 
         MDTopAppBar:
-            title: f"{root.event.date} - {root.event.name}" if root.event else "Boards"
+            title: "Board details"
             left_action_items: [["arrow-left", lambda x: app.nav.board_list("right")]]
             right_action_items: [["content-save", lambda x: root.save_board()]]
+
+            MDLabel:
+                text: f"{root.event.name} - {root.event.date}" if root.event else "Board"
+                # pos_hint: {"center_x": 0.5, "center_y": 0.2}
+                size_hint_y: None
+                height: dp(20)
 
         ScrollView:
             MDBoxLayout:

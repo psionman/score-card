@@ -3,9 +3,15 @@
         orientation: "vertical"
 
         MDTopAppBar:
-            title: f"{root.event.date} - {root.event.name}" if root.event else "Sections"
+            title: "Sections scores"
             left_action_items: [["arrow-left", lambda x: app.nav.section_list("right")]]
             right_action_items: [["content-save", lambda x: root.save_section()]]
+
+            MDLabel:
+                text: f"{root.event.name} - {root.event.date}" if root.event else "Sections scores"
+                # pos_hint: {"center_x": 0.5, "center_y": 0.2}
+                size_hint_y: None
+                height: dp(20)
 
         ScrollView:
             do_scroll_x: False
