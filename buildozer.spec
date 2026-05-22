@@ -28,3 +28,4 @@ android.minapi = 21
 android.ndk = 25b
 android.permissions = INTERNET, WRITE_EXTERNAL_STORAGE, READ_EXTERNAL_STORAGE, MANAGE_EXTERNAL_STORAGE
 android.add_cmake_options = -DCMAKE_POLICY_VERSION_MINIMUM=3.5
+android.soft_input_mode = resize

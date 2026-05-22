@@ -1,9 +1,8 @@
 # app.py
 
-from dataclasses import dataclass
 import os
-from pathlib import Path
 from dataclasses import dataclass
+from pathlib import Path
 
 # Must be before any kivy imports when testing on desktop
 from kivy.config import Config
@@ -16,7 +15,9 @@ if os.environ.get("KIVY_BUILD") != "android":
 
 from constants import BASE_DIR, DEBUG_SCREEN, INITIALISE_DB
 from database import init_db
+from kivy.clock import Clock
 from kivy.core.text import LabelBase
+from kivy.core.window import Window
 from kivy.uix.screenmanager import FadeTransition, NoTransition, ScreenManager
 from kivymd.app import MDApp
 from navigation import NavigationService
@@ -60,6 +61,7 @@ class ScoreCard(MDApp):
         ("section_board_list", SectionBoardList),
         ("settings_form", SettingsFormScreen),
         ("not_implemented_form", NotImplementedForm),
+        # ("app_header", AppHeader),
     ]
 
     def __init__(self, **kwargs):
@@ -78,6 +80,9 @@ class ScoreCard(MDApp):
         return self.current_event
 
     def build(self):
+        Window.softinput_mode = "pan"
+        Window.bind(keyboard_height=self.on_keyboard_height)
+
         self.theme_cls.primary_palette = "Green"
         self.theme_cls.theme_style = "Light"
 
@@ -98,3 +103,8 @@ class ScoreCard(MDApp):
         self.sm.transition = FadeTransition(duration=0.3)
 
         return self.sm
+
+    def on_keyboard_height(self, window, height):
+        if height > 0:
+            # keyboard is open
+            Clock.schedule_once(self.scroll_to_notes, 0.1)

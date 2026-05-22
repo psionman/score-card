@@ -1,0 +1,19 @@
+# kivy/appheader.kv
+
+<AppHeader@MDBoxLayout>:
+    orientation: "vertical"
+    size_hint_y: None
+    height: dp(72)   # important: fixed height
+
+    MDTopAppBar:
+        title: root.title
+        left_action_items: root.left_actions
+        right_action_items: root.right_actions
+
+    MDLabel:
+        text: root.subtitle
+        size_hint_y: None
+        height: dp(22)
+        halign: "center"
+        size_hint_x: 1
+        md_bg_color: app.theme_cls.primary_color

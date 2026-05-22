@@ -1,24 +1,24 @@
 # custom_widgets.py
 
+from collections.abc import Callable
 from pathlib import Path
-from typing import Callable
-
-from kivy.uix.button import Button
-from kivy.properties import BooleanProperty, ColorProperty
-from kivy.metrics import dp
-from kivymd.app import MDApp
-from kivy.graphics import Color, RoundedRectangle
-from kivy.lang import Builder
-from kivy.factory import Factory
-from kivy.uix.widget import Widget
-from kivymd.uix.list import OneLineIconListItem, IconLeftWidget
-from kivymd.uix.menu import MDDropdownMenu
-from kivy.properties import StringProperty
 
 from constants import KV_DIR
+from kivy.factory import Factory
+from kivy.graphics import Color, RoundedRectangle
+from kivy.lang import Builder
+from kivy.metrics import dp
+from kivy.properties import BooleanProperty, ColorProperty, StringProperty
+from kivy.uix.button import Button
+from kivy.uix.widget import Widget
+from kivymd.app import MDApp
+from kivymd.uix.list import IconLeftWidget, OneLineIconListItem
+from kivymd.uix.menu import MDDropdownMenu
+
 
 class Divider(Widget):
     pass
+
 
 Builder.load_string("""
 <IconListItem>:
@@ -26,11 +26,14 @@ Builder.load_string("""
         icon: root.icon
 """)
 
+
 class IconListItem(OneLineIconListItem):
     icon = StringProperty()
 
-Factory.register('Divider', cls=Divider)
-Factory.register('IconLeftWidget', cls=IconLeftWidget)
+
+Factory.register("Divider", cls=Divider)
+Factory.register("IconLeftWidget", cls=IconLeftWidget)
+
 
 class SuitButton(Button):
     selected = BooleanProperty(False)
@@ -45,7 +48,8 @@ class SuitButton(Button):
             selected=self._redraw,
             pos=self._redraw,
             size=self._redraw,
-            suit_color=self._redraw)
+            suit_color=self._redraw,
+        )
 
     def _redraw(self, *args):
         app = MDApp.get_running_app()
@@ -60,7 +64,9 @@ class SuitButton(Button):
             RoundedRectangle(pos=self.pos, size=self.size, radius=[dp(4)])
         self.color = (1, 1, 1, 1) if self.selected else self.suit_color
 
+
 Builder.load_file(str(Path(KV_DIR, "custom_widgets.kv")))
+
 
 def _get_menu_divider():
     return {
@@ -68,16 +74,19 @@ def _get_menu_divider():
         "height": dp(1),
         "on_release": lambda: None,
     }
+
+
 menu_divider = _get_menu_divider()
 
 
 def menu_icon_item(text: str, icon: str, handler: Callable) -> dict:
     return {
-            "text": text,
-            "icon": icon,
-            "viewclass": "IconListItem",
-            "on_release": lambda x=text: handler(text),
-        }
+        "text": text,
+        "icon": icon,
+        "viewclass": "IconListItem",
+        "on_release": lambda x=text: handler(text),
+    }
+
 
 def menu_handler(caller, menu_items: list):
     menu_items = menu_items

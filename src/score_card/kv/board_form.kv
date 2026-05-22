@@ -4,17 +4,24 @@
         orientation: "vertical"
 
         MDTopAppBar:
+            id: appbar
             title: "Board details"
             left_action_items: [["arrow-left", lambda x: app.nav.board_list("right")]]
             right_action_items: [["content-save", lambda x: root.save_board()]]
 
-            MDLabel:
-                text: f"{root.event.name} - {root.event.date}" if root.event else "Board"
-                # pos_hint: {"center_x": 0.5, "center_y": 0.2}
-                size_hint_y: None
-                height: dp(20)
+        MDLabel:
+            text: f"{root.event.name} - {root.event.date}" if root.event else "Board"
+            pos_hint: {"center_x": 0.5, "center_y": 0.2}
+            halign: "center"
+            size_hint_y: None
+            height: dp(20)
+            md_bg_color: root.ids.appbar.md_bg_color
 
         ScrollView:
+            id: scroll
+            do_scroll_x: False
+            do_scroll_y: True   # explicitly set
+            
             MDBoxLayout:
                 orientation: "vertical"
                 padding: dp(20)
@@ -45,6 +52,7 @@
                     id: opponents
                     hint_text: "Opponents (pair number)"
                     input_filter: "int"
+                    keyboard_suggestions: False
 
                 WhiteTextField:
                     id: contract
@@ -77,7 +85,6 @@
                     hint_text: "Score"
                     readonly: True
                     input_filter: "int"
-                    readonly: True
                     disabled: True
 
                 WhiteTextField:
@@ -108,3 +115,5 @@
                     height: dp(140)
                     max_lines: 8
                     font_size: dp(16)
+
+                    on_focus: root.handle_notes_focus(args[1]) if args[1] else None

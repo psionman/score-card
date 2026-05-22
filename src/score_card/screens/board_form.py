@@ -3,8 +3,10 @@ from pathlib import Path
 
 from constants import KV_DIR
 from kivy.app import App
+from kivy.clock import Clock
+from kivy.core.window import Window
 from kivy.lang import Builder
-from kivy.metrics import dp
+from kivy.metrics import Metrics, dp
 from kivy.properties import ObjectProperty, StringProperty
 from kivy.uix.modalview import ModalView
 from kivymd.uix.menu import MDDropdownMenu
@@ -371,6 +373,11 @@ class BoardForm(MDScreen):
         )
         self._contract_modal.add_widget(self._contract_picker)
         self._contract_picker.bind(contract=self._on_contract_selected)
+        Window.bind(keyboard_height=self._on_keyboard_height)
+
+    def _on_keyboard_height(self, window, height):
+        if self.ids.notes_input.focus:
+            Clock.schedule_once(self._scroll_to_notes, 0.1)
 
     def _hide_card(self, card, picker) -> None:
         card.opacity = 0
@@ -467,3 +474,75 @@ class BoardForm(MDScreen):
             return True
 
         return super().on_touch_down(touch)
+
+    # =====================================================================
+    # Keyboard handling for Android
+    # =====================================================================
+
+    def _get_keyboard_height(self):
+        try:
+            from jnius import autoclass
+
+            activity = autoclass("org.kivy.android.PythonActivity").mActivity
+            rect = autoclass("android.graphics.Rect")()
+            activity.getWindow().getDecorView().getWindowVisibleDisplayFrame(
+                rect
+            )
+            screen_height = (
+                activity.getWindowManager().getDefaultDisplay().getHeight()
+            )
+            return screen_height - rect.bottom
+        except Exception as e:
+            print(f"[KB] failed: {e}")
+            return int(Window.height * 0.4)
+
+    def _resize_for_keyboard(self, dt):
+        kb_height = self._get_keyboard_height()
+        if kb_height <= 0:
+            return
+
+        scroll = self.ids.scroll
+        content = scroll.children[0]  # the MDBoxLayout inside ScrollView
+
+        print(f"[RESIZE] kb_height={kb_height}")
+        print(f"[RESIZE] content.height before={content.height}")
+        print(f"[RESIZE] scroll.height={scroll.height}")
+
+        # Store original padding
+        if not hasattr(self, "_original_padding"):
+            self._original_padding = list(content.padding)
+
+        # Add extra breathing room on top of keyboard height
+        extra = int(dp(80))  # enough to show full notes field
+
+        # Add bottom padding equal to keyboard height so notes scrolls above keyboard
+        content.padding = [
+            self._original_padding[0],  # left
+            self._original_padding[1],  # top
+            self._original_padding[2],  # right
+            kb_height + extra,
+        ]
+
+        # Now scroll to bottom to reveal notes
+        Clock.schedule_once(self._scroll_to_bottom, 0.15)
+
+    def _scroll_to_bottom(self, dt):
+        scroll = self.ids.scroll
+        # content = scroll.children[0]
+        # print(
+        #     f"[SCROLL] content.height={content.height} scroll.height={scroll.height}"
+        # )
+        # print(f"[SCROLL] scrollable={content.height - scroll.height}")
+        scroll.scroll_y = 0
+
+    def _restore_size(self, dt):
+        if hasattr(self, "_original_padding"):
+            content = self.ids.scroll.children[0]
+            content.padding = self._original_padding
+            print(f"[RESTORE] padding restored")
+
+    def handle_notes_focus(self, focused):
+        if focused:
+            Clock.schedule_once(self._resize_for_keyboard, 0.5)
+        else:
+            Clock.schedule_once(self._restore_size, 0.5)
