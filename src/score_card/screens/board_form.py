@@ -27,6 +27,9 @@ VUL_MAP = {
 }
 
 SECTIONS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+MAX_BOARDS = 48
+MAX_OPPONENTS = 48
+MAX_TRICKS = 13
 
 
 class BoardForm(MDScreen):
@@ -256,14 +259,24 @@ class BoardForm(MDScreen):
         self._open_modal(name, field)
 
     def _open_modal(self, name, field):
-        if name == "lead":
+        if name == "board_number":
+            self._show_menu(
+                field, [str(_) for _ in (range(1, MAX_BOARDS + 1))]
+            )
+        elif name == "opponents":
+            self._show_menu(
+                field, [str(_) for _ in (range(1, MAX_OPPONENTS + 1))]
+            )
+        elif name == "lead":
             self._show_lead()
         elif name == "contract":
             self._show_contract()
         elif name == "declarer":
             self._show_menu(field, ["N", "S", "E", "W"])
         elif name == "tricks":
-            self._show_menu(field, [str(_) for _ in reversed(range(14))])
+            self._show_menu(
+                field, [str(_) for _ in reversed(range(MAX_TRICKS + 1))]
+            )
         elif name == "section":
             self._show_menu(field, [section for section in SECTIONS])
         elif name == "orientation":
@@ -273,6 +286,8 @@ class BoardForm(MDScreen):
 
     def _close_modal(self, name):
         if name in [
+            "board_number",
+            "opponents",
             "declarer",
             "orientation",
             "vulnerable",
@@ -298,7 +313,12 @@ class BoardForm(MDScreen):
     def commit(self, value):
         name = self.active_modal
 
-        if name == "lead":
+        if name == "board_number":
+            self.ids.board_number.text = value
+            print(f"Board number set to {value}")
+        elif name == "opponents":
+            self.ids.opponents.text = value
+        elif name == "lead":
             self.ids.lead.text = value
         elif name == "contract":
             self.ids.contract.text = value

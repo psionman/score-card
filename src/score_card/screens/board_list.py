@@ -50,8 +50,8 @@ class BoardList(MDScreen):
 
             item = OneLineListItem(
                 text=(
-                    f"Board {board.board_number} - {board.contract} "
-                    f"{continuation} - {board.section}"
+                    f"({board.section})Board {board.board_number} "
+                    f"- {board.contract} {continuation}"
                 )
             )
             item.bind(on_release=lambda x, b=board: self.open_board(b))
