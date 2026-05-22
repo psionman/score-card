@@ -6,7 +6,7 @@ from kivy.app import App
 from kivy.clock import Clock
 from kivy.core.window import Window
 from kivy.lang import Builder
-from kivy.metrics import Metrics, dp
+from kivy.metrics import dp
 from kivy.properties import ObjectProperty, StringProperty
 from kivy.uix.modalview import ModalView
 from kivymd.uix.menu import MDDropdownMenu
@@ -539,7 +539,7 @@ class BoardForm(MDScreen):
         if hasattr(self, "_original_padding"):
             content = self.ids.scroll.children[0]
             content.padding = self._original_padding
-            print(f"[RESTORE] padding restored")
+            print("[RESTORE] padding restored")
 
     def handle_notes_focus(self, focused):
         if focused:

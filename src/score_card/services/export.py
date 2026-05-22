@@ -8,55 +8,84 @@ from kivy.app import App
 from kivy.utils import platform
 from models.event import Event
 from services.board import BoardService
+from services.partner import PartnerService
 from utilities import msg_dialog
 
 
 def export_event_csv(event: Event) -> str:
-    """Export event boards to CSV. Returns the file path."""
     downloads = _get_download_dir()
+
     safe_name = event.name.replace(" ", "_").replace("/", "-")
     filename = f"{event.date}_{safe_name}.csv"
+
     filepath = downloads / filename
     filepath.parent.mkdir(parents=True, exist_ok=True)
 
-    fieldnames = [
-        "Board",
-        "Contract",
-        "Declarer",
-        "Lead",
-        "Tricks",
-        "Score",
-        "Vulnerable",
-        "Orientation",
-        "Opponents",
-        "Section",
-        "Team Score",
-        "IMPs",
-        "Notes",
-    ]
+    event.boards = BoardService.get_boards_for_event(event.id)
+
     with open(filepath, "w", newline="", encoding="utf-8") as f:
-        writer = csv.DictWriter(f, fieldnames=fieldnames)
-        writer.writeheader()
-        event.boards = BoardService.get_boards_for_event(event.id)
+        writer = csv.writer(f)
+
+        # -----------------------
+        # EVENT DETAILS
+        # -----------------------
+
+        writer.writerow(["Event Name", event.name])
+        writer.writerow(["Date", event.date])
+        writer.writerow(["Location", event.location or ""])
+        writer.writerow(["Notes", event.notes or ""])
+        writer.writerow([])
+
+        partner = PartnerService.get_partner(event.partner_id)
+        writer.writerow(["Partner name", partner.name if partner else ""])
+        writer.writerow(["Partner EBU", partner.ebu_number if partner else ""])
+        writer.writerow([])
+
+        # -----------------------
+        # BOARD HEADER
+        # -----------------------
+
+        writer.writerow(
+            [
+                "Board",
+                "Contract",
+                "Declarer",
+                "Lead",
+                "Tricks",
+                "Score",
+                "Vulnerable",
+                "Orientation",
+                "Opponents",
+                "Section",
+                "Team Score",
+                "IMPs",
+                "Notes",
+            ]
+        )
+
+        # -----------------------
+        # BOARDS
+        # -----------------------
 
         for board in event.boards or []:
             writer.writerow(
-                {
-                    "Board": board.board_number,
-                    "Contract": board.contract,
-                    "Declarer": board.declarer,
-                    "Lead": board.lead,
-                    "Tricks": board.tricks,
-                    "Score": board.score,
-                    "Vulnerable": board.vulnerable,
-                    "Orientation": board.orientation,
-                    "Opponents": board.opponents,
-                    "Section": board.section,
-                    "Team Score": board.team_score,
-                    "IMPs": board.imps,
-                    "Notes": board.notes or "",
-                }
+                [
+                    board.board_number,
+                    board.contract,
+                    board.declarer,
+                    board.lead,
+                    board.tricks,
+                    board.score,
+                    board.vulnerable,
+                    board.orientation,
+                    board.opponents,
+                    board.section,
+                    board.team_score,
+                    board.imps,
+                    board.notes or "",
+                ]
             )
+
     share_file_email(filepath, "Event")
     return filepath
 
@@ -74,26 +103,27 @@ def share_file_email(filepath: str, file_type: str = "") -> None:
     try:
         from jnius import autoclass, cast
 
-        PythonActivity = autoclass("org.kivy.android.PythonActivity")
-        Intent = autoclass("android.content.Intent")
-        CharSequence = autoclass("java.lang.CharSequence")
-        String = autoclass("java.lang.String")
+        kivy_python = autoclass("org.kivy.android.PythonActivity")
+        kivy_intent = autoclass("android.content.Intent")
+        # CharSequence = autoclass("java.lang.CharSequence")
+        java_string = autoclass("java.lang.String")
 
-        intent = Intent(Intent.ACTION_SEND)
+        intent = kivy_intent(kivy_intent.ACTION_SEND)
         intent.setType("text/plain")
         intent.putExtra(
-            Intent.EXTRA_SUBJECT, String(f"Score Card Export - {file_type}")
+            kivy_intent.EXTRA_SUBJECT,
+            java_string(f"Score Card Export - {file_type}"),
         )
 
         with open(filepath) as f:
             content = f.read()
 
-        intent.putExtra(Intent.EXTRA_TEXT, String(content))
-        intent.putExtra(Intent.EXTRA_EMAIL, [email_address])
+        intent.putExtra(kivy_intent.EXTRA_TEXT, java_string(content))
+        intent.putExtra(kivy_intent.EXTRA_EMAIL, [email_address])
 
-        activity = PythonActivity.mActivity
-        title = cast("java.lang.CharSequence", String("Share"))
-        chooser = Intent.createChooser(intent, title)
+        activity = kivy_python.mActivity
+        title = cast("java.lang.CharSequence", java_string("Share"))
+        chooser = kivy_intent.createChooser(intent, title)
         activity.startActivity(chooser)
     except ImportError:
         msg_dialog(
@@ -102,6 +132,7 @@ def share_file_email(filepath: str, file_type: str = "") -> None:
     except Exception as e:
         logging.error(f">>> share failed: {e}")
         logging.error(traceback.format_exc())
+        print(e)
         msg_dialog("Export Failed", f"Failed to share file: {e}")
 
 
