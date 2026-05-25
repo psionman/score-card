@@ -1,9 +1,11 @@
-from kivymd.uix.screen import MDScreen
-from kivy.lang import Builder
 from pathlib import Path
 
-from services.partner import PartnerService
 from constants import KV_DIR
+from kivy.lang import Builder
+from kivymd.uix.button import MDFlatButton
+from kivymd.uix.dialog import MDDialog
+from kivymd.uix.screen import MDScreen
+from services.partner import PartnerService
 
 Builder.load_file(str(Path(KV_DIR, "partner_form.kv")))
 
@@ -39,14 +41,13 @@ class PartnerFormScreen(MDScreen):
             self.show_error(str(e))
 
     def show_error(self, message):
-        from kivymd.uix.dialog import MDDialog
-        from kivymd.uix.button import MDFlatButton
-
         self.dialog = MDDialog(
             title="Error",
             text=message,
             buttons=[
-                MDFlatButton(text="OK", on_release=lambda x: self.dialog.dismiss())
+                MDFlatButton(
+                    text="OK", on_release=lambda x: self.dialog.dismiss()
+                )
             ],
         )
         self.dialog.open()

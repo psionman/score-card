@@ -53,27 +53,12 @@ class BoardForm(MDScreen):
         Window.softinput_mode = ""
 
     def _on_keyboard_height(self, window, height):
-        print(f"keyboard_height={height}")
         if height > 0:
             Clock.schedule_once(self._scroll_to_notes, 0.15)
-        # optional: scroll back up when keyboard closes
-        # else:
-        #     Clock.schedule_once(lambda dt: setattr(self.ids.scroll, 'scroll_y', 1), 0.15)
 
     def _scroll_to_notes(self, dt):
         scroll = self.ids.scroll
         notes = self.ids.notes_input
-
-        print(f"scroll.height={scroll.height}")
-        print(f"scroll.scroll_y={scroll.scroll_y}")
-        print(f"notes.y={notes.y}, notes.height={notes.height}")
-        print(f"notes.to_window={notes.to_window(0, 0)}")
-
-        content = scroll.children[0]
-        print(f"content.height={content.height}")
-        print(
-            f"content.height - scroll.height = {content.height - scroll.height}"
-        )
 
         scroll.scroll_to(notes, padding=dp(20))
 
@@ -572,7 +557,8 @@ class BoardForm(MDScreen):
         # Add extra breathing room on top of keyboard height
         extra = int(dp(80))  # enough to show full notes field
 
-        # Add bottom padding equal to keyboard height so notes scrolls above keyboard
+        # Add bottom padding equal to keyboard height
+        # so notes scrolls above keyboard
         content.padding = [
             self._original_padding[0],  # left
             self._original_padding[1],  # top

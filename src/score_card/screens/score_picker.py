@@ -2,12 +2,11 @@
 
 from pathlib import Path
 
-from kivy.lang import Builder
-from kivy.properties import StringProperty, ObjectProperty
-from kivy.uix.boxlayout import BoxLayout
-from kivy.clock import Clock
-
 from constants import KV_DIR
+from kivy.clock import Clock
+from kivy.lang import Builder
+from kivy.properties import ObjectProperty, StringProperty
+from kivy.uix.boxlayout import BoxLayout
 
 HIGHLIGHT_DELAY = 0.67
 
