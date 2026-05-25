@@ -42,8 +42,48 @@ class BoardForm(MDScreen):
     event = ObjectProperty(None, allownone=True)
 
     def on_pre_enter(self):
+        print("on_pre_enter")
         app = App.get_running_app()
         self.event = app.current_event
+        Window.softinput_mode = "below_target"
+        Window.bind(keyboard_height=self._on_keyboard_height)
+
+    def on_pre_leave(self):
+        # Window.unbind(keyboard_height=self._on_keyboard_height)
+        Window.softinput_mode = ""
+
+    def _on_keyboard_height(self, window, height):
+        print(f"keyboard_height={height}")
+        if height > 0:
+            Clock.schedule_once(self._scroll_to_notes, 0.15)
+        # optional: scroll back up when keyboard closes
+        # else:
+        #     Clock.schedule_once(lambda dt: setattr(self.ids.scroll, 'scroll_y', 1), 0.15)
+
+    def _scroll_to_notes(self, dt):
+        scroll = self.ids.scroll
+        notes = self.ids.notes_input
+
+        print(f"scroll.height={scroll.height}")
+        print(f"scroll.scroll_y={scroll.scroll_y}")
+        print(f"notes.y={notes.y}, notes.height={notes.height}")
+        print(f"notes.to_window={notes.to_window(0, 0)}")
+
+        content = scroll.children[0]
+        print(f"content.height={content.height}")
+        print(
+            f"content.height - scroll.height = {content.height - scroll.height}"
+        )
+
+        scroll.scroll_to(notes, padding=dp(20))
+
+        Clock.schedule_once(self._after_scroll, 0.2)
+
+    def _after_scroll(self, dt):
+        scroll = self.ids.scroll
+        notes = self.ids.notes_input
+        print(f"AFTER: scroll.scroll_y={scroll.scroll_y}")
+        print(f"AFTER: notes.to_window={notes.to_window(0, 0)}")
 
     def open_menu(self, field, items):
         menu_items = [
@@ -393,11 +433,12 @@ class BoardForm(MDScreen):
         )
         self._contract_modal.add_widget(self._contract_picker)
         self._contract_picker.bind(contract=self._on_contract_selected)
-        Window.bind(keyboard_height=self._on_keyboard_height)
 
-    def _on_keyboard_height(self, window, height):
-        if self.ids.notes_input.focus:
-            Clock.schedule_once(self._scroll_to_notes, 0.1)
+    #     Window.bind(keyboard_height=self._on_keyboard_height)
+
+    # def _on_keyboard_height(self, window, height):
+    #     if self.ids.notes_input.focus:
+    #         Clock.schedule_once(self._scroll_to_notes, 0.1)
 
     def _hide_card(self, card, picker) -> None:
         card.opacity = 0
@@ -522,11 +563,7 @@ class BoardForm(MDScreen):
             return
 
         scroll = self.ids.scroll
-        content = scroll.children[0]  # the MDBoxLayout inside ScrollView
-
-        print(f"[RESIZE] kb_height={kb_height}")
-        print(f"[RESIZE] content.height before={content.height}")
-        print(f"[RESIZE] scroll.height={scroll.height}")
+        content = scroll.children[0]
 
         # Store original padding
         if not hasattr(self, "_original_padding"):
@@ -548,18 +585,12 @@ class BoardForm(MDScreen):
 
     def _scroll_to_bottom(self, dt):
         scroll = self.ids.scroll
-        # content = scroll.children[0]
-        # print(
-        #     f"[SCROLL] content.height={content.height} scroll.height={scroll.height}"
-        # )
-        # print(f"[SCROLL] scrollable={content.height - scroll.height}")
         scroll.scroll_y = 0
 
     def _restore_size(self, dt):
         if hasattr(self, "_original_padding"):
             content = self.ids.scroll.children[0]
             content.padding = self._original_padding
-            print("[RESTORE] padding restored")
 
     def handle_notes_focus(self, focused):
         if focused:

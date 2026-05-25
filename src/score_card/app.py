@@ -37,6 +37,8 @@ LabelBase.register(
     "DejaVuSans", fn_regular=str(Path(BASE_DIR, "fonts", "DejaVuSans.ttf"))
 )
 
+SCROLL_SCREENS = {"board_form"}
+
 
 @dataclass
 class LastBoard:
@@ -80,8 +82,7 @@ class ScoreCard(MDApp):
         return self.current_event
 
     def build(self):
-        Window.softinput_mode = "pan"
-        Window.bind(keyboard_height=self.on_keyboard_height)
+        Window.softinput_mode = "below_target"
 
         self.theme_cls.primary_palette = "Green"
         self.theme_cls.theme_style = "Light"
@@ -104,7 +105,6 @@ class ScoreCard(MDApp):
 
         return self.sm
 
-    def on_keyboard_height(self, window, height):
-        if height > 0:
-            # keyboard is open
+    def on_window_resize(self, window, width, height):
+        if self.sm.current in SCROLL_SCREENS:
             Clock.schedule_once(self.scroll_to_notes, 0.1)
